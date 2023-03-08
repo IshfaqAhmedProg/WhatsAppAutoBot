@@ -44,7 +44,6 @@ io.on('connection', async (socket) => {
     console.log("clients:", clients);
 
     socket.on('set_client', (data) => {
-        socket.emit('recieve_message', 'Checking for client! Please wait...')
         const isOldClient = clients.filter((o) => o.name === data.name)
         if (isOldClient.length == 0) {
             clientData.id = data.id
@@ -56,6 +55,7 @@ io.on('connection', async (socket) => {
             clientData.name = isOldClient[0].name
 
         }
+        socket.emit('recieve_message', 'Checking for client! Please wait...')
 
         const client = new Client({
             authStrategy: new LocalAuth({
@@ -85,11 +85,13 @@ io.on('connection', async (socket) => {
             console.log('Client is ready!');
             socket.emit('client_ready', 'Connected to WhatsApp Web! Client is now ready!')
         });
+        socket.on('log_out', (data) => {
+            console.log("logout server")
+            client.destroy()
+            socket.emit('logged_out', { loggedOut: true })
+        })
+    })
 
-    })
-    socket.on('log_out', (data) => {
-        socket.disconnect();
-    })
 
 })
 // app.use('/api',

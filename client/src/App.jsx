@@ -26,7 +26,7 @@ export default function App() {
     >
       <Routes>
         <Route path="/" element={<Home socket={socket} />} />
-        <Route path="menu" element={<Menu socket={socket} />} />
+        <Route path="/menu" element={<Menu socket={socket} />} />
       </Routes>
     </Box>
   );

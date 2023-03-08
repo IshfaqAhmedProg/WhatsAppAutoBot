@@ -1,4 +1,4 @@
-import { Box, Button, Image, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Image, Input, Text, useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { useNavigate } from "react-router-dom";
@@ -8,13 +8,13 @@ import "./index.css";
 export default function Home({ socket }) {
   const navigate = useNavigate();
   const [allClient, setAllClient] = useState();
+  const [qr, setQr] = useState("");
   const [loading, setLoading] = useState(false);
   const [serverData, setServerData] = useState({
     id: "",
     name: "",
-    qr: "",
-    message: "",
   });
+  const toast = useToast();
   function create_UUID() {
     var dt = new Date().getTime();
     var uuid = "xxxxyxxxxx".replace(/[xy]/g, function (c) {
@@ -27,26 +27,32 @@ export default function Home({ socket }) {
   function handleNewClientForm(e) {
     e.preventDefault();
     setLoading(true);
-    const id = serverData.id || create_UUID();
+    const id = serverData.id;
     console.log({ id: id, name: serverData.name });
     socket.emit("set_client", { id: id, name: serverData.name });
   }
-
   useEffect(() => {
     socket.on("recieve_message", (data) => {
-      setServerData({ ...serverData, message: data });
+      toast({
+        title: data,
+        description:
+          "If new client is detected, QR will be generated or else you'll be logged in.",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
     });
   }, [socket]);
   useEffect(() => {
     socket.on("qr_generated", (qr) => {
       setLoading(false);
-      setServerData({ ...serverData, qr: qr });
+      setQr(qr);
     });
   }, [socket]);
   useEffect(() => {
     socket.on("client_ready", (data) => {
       setServerData({ ...serverData, message: data });
-      navigate("menu", { replace: false });
+      navigate("/menu");
     });
   }, [socket]);
   useEffect(() => {
@@ -71,7 +77,7 @@ export default function Home({ socket }) {
         boxSize="200px"
         objectFit="cover"
       />
-      {!serverData.qr ? (
+      {!qr ? (
         <>
           <form
             onSubmit={handleNewClientForm}
@@ -90,7 +96,11 @@ export default function Home({ socket }) {
               placeholder="Enter name here"
               type="text"
               onChange={(e) => {
-                setServerData({ ...serverData, name: e.target.value });
+                setServerData({
+                  ...serverData,
+                  id: create_UUID(),
+                  name: e.target.value,
+                });
               }}
             />
             <Button
@@ -163,10 +173,10 @@ export default function Home({ socket }) {
           <Text fontWeight="bold" color="whatsapp.400">
             Scan the QR code
           </Text>
-          <QRCode value={serverData.qr} />
+          <QRCode value={qr} />
         </Box>
       )}
-      {serverData.message && <AlertComponent message={serverData.message} />}
+      {console.log(serverData)}
     </Box>
   );
 }

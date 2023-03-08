@@ -1,21 +1,23 @@
 import React, { useEffect } from "react";
 import { Alert, AlertIcon, CloseButton, useDisclosure } from "@chakra-ui/react";
-export default function AlertComponent({ message, open }) {
+export default function AlertComponent({ message }) {
   const {
     isOpen: isVisible,
     onClose,
     onOpen,
   } = useDisclosure({ defaultIsOpen: true });
+  console.log("open", open);
   useEffect(() => {
+    console.log("isVisible", isVisible);
     const closer = setTimeout(() => {
       if (isVisible) {
         onClose();
       }
-    }, 3000);
+    }, 1000);
     return () => {
       clearTimeout(closer);
     };
-  }, onOpen);
+  });
 
   return (
     isVisible && (
