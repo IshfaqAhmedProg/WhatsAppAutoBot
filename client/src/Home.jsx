@@ -1,8 +1,7 @@
 import { Box, Button, Image, Input, Text, useToast } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import QRCode from "react-qr-code";
-import { useNavigate } from "react-router-dom";
-import AlertComponent from "./components/Alert";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import WhatsAppQRCode from "./components/WhatsAppQRCode";
 import "./index.css";
 
 export default function Home({ socket }) {
@@ -10,7 +9,9 @@ export default function Home({ socket }) {
   const [allClient, setAllClient] = useState();
   const [qr, setQr] = useState("");
   const [loading, setLoading] = useState(false);
-  const [serverData, setServerData] = useState({
+  const clientSet = useRef(false);
+  const clientReady = useRef(false);
+  const [clientData, setServerData] = useState({
     id: "",
     name: "",
   });
@@ -27,12 +28,14 @@ export default function Home({ socket }) {
   function handleNewClientForm(e) {
     e.preventDefault();
     setLoading(true);
-    const id = serverData.id;
-    console.log({ id: id, name: serverData.name });
-    socket.emit("set_client", { id: id, name: serverData.name });
+    const id = clientData.id;
+    console.log({ id: id, name: clientData.name });
+    socket.emit("set_client", { id: id, name: clientData.name });
   }
   useEffect(() => {
     socket.on("recieve_message", (data) => {
+      if (clientSet.current) return;
+      clientSet.current = true;
       toast({
         title: data,
         description:
@@ -51,8 +54,13 @@ export default function Home({ socket }) {
   }, [socket]);
   useEffect(() => {
     socket.on("client_ready", (data) => {
-      setServerData({ ...serverData, message: data });
-      navigate("/menu");
+      toast({
+        title: data.message,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      navigate("/menu", { state: { id: data.id, name: data.name } });
     });
   }, [socket]);
   useEffect(() => {
@@ -61,6 +69,7 @@ export default function Home({ socket }) {
       console.log(data);
     });
   }, [socket]);
+
   return (
     <Box
       paddingBlock="3"
@@ -71,12 +80,14 @@ export default function Home({ socket }) {
       alignItems="center"
       position="relative"
     >
-      <Image
-        src="/WhatsappBotLogo.png"
-        alt="Logo"
-        boxSize="200px"
-        objectFit="cover"
-      />
+      <Link to="https://github.com/IshfaqAhmedProg" target="_blank">
+        <Image
+          src="/WhatsappBotLogo.png"
+          alt="Logo"
+          boxSize="200px"
+          objectFit="cover"
+        />
+      </Link>
       {!qr ? (
         <>
           <form
@@ -88,8 +99,9 @@ export default function Home({ socket }) {
               alignItems: "center",
             }}
           >
-            Enter client name
+            <Text color="whatsapp.300">Enter client name</Text>
             <Input
+              isRequired={true}
               maxWidth="xs"
               bg="gray.700"
               borderColor="whatsapp.800"
@@ -97,11 +109,12 @@ export default function Home({ socket }) {
               type="text"
               onChange={(e) => {
                 setServerData({
-                  ...serverData,
+                  ...clientData,
                   id: create_UUID(),
                   name: e.target.value,
                 });
               }}
+              value={clientData.name}
             />
             <Button
               type="submit"
@@ -133,7 +146,7 @@ export default function Home({ socket }) {
                 allClient.map((client) => {
                   return (
                     <Button
-                      disabled={loading}
+                      isDisabled={loading}
                       type="submit"
                       key={client.id}
                       width="full"
@@ -144,14 +157,16 @@ export default function Home({ socket }) {
                       minHeight="3rem"
                       onClick={() => {
                         setServerData({
-                          ...serverData,
+                          ...clientData,
                           id: client.id,
                           name: client.name,
                         });
                       }}
                     >
+                      <Text fontSize="md" fontWeight="bold">
+                        {client.name}
+                      </Text>
                       <Text fontWeight="light">#{client.id}</Text>
-                      <Text>{client.name}</Text>
                     </Button>
                   );
                 })
@@ -160,23 +175,9 @@ export default function Home({ socket }) {
           </form>
         </>
       ) : (
-        <Box
-          borderColor="whatsapp.500"
-          borderWidth="1px"
-          borderRadius="md"
-          padding="20"
-          display="flex"
-          flexDirection="column"
-          gap="1rem"
-          alignItems="center"
-        >
-          <Text fontWeight="bold" color="whatsapp.400">
-            Scan the QR code
-          </Text>
-          <QRCode value={qr} />
-        </Box>
+        <WhatsAppQRCode qr={qr} />
       )}
-      {console.log(serverData)}
+      {console.log(clientData)}
     </Box>
   );
 }
