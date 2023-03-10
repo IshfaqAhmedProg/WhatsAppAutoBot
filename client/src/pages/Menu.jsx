@@ -11,17 +11,17 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../index.css";
 import { FaExchangeAlt } from "react-icons/fa";
+import { useClient } from "../contexts/clientContext";
 
 export default function Menu({ socket }) {
-  const clientData = useLocation();
-  console.log(clientData.state);
-  const navigate = useNavigate();
+  const { clientData, removeClient } = useClient();
   function changeClient() {
     socket.emit("log_out", "");
+    removeClient();
   }
 
   const menuItems = [
@@ -32,15 +32,16 @@ export default function Menu({ socket }) {
         "Create a vCard file and import the file onto your client devices contacts.",
     },
     {
-      link: "/validateContacts",
+      link: "/validateNumbers",
       display: "Validate Contacts",
-      description: "Check if contacts that you imported are whatsapp or not.",
+      description:
+        "Get all the contacts and their data, including profile picture",
     },
     {
-      link: "/getContactData",
-      display: "Get Whatsapp contacts data",
+      link: "/allContacts",
+      display: "All Contacts",
       description:
-        "Get all the whatsapp contacts and their data, including profile picture.",
+        "Engage with your whatsapp contacts, by sending individual messages and more.",
     },
     {
       link: "/sendMessage",
@@ -49,6 +50,7 @@ export default function Menu({ socket }) {
         "Send bulk messages to as many of your whatsapp contacts as you need.",
     },
   ];
+  
   return (
     <>
       <Link
@@ -56,6 +58,7 @@ export default function Menu({ socket }) {
         target="_blank"
         style={{ position: "absolute", top: "5%", left: "5%" }}
       >
+        {console.log("clientData", clientData)}
         <Image
           src="/WhatsappBotLogo2.png"
           alt="logo"
@@ -91,16 +94,15 @@ export default function Menu({ socket }) {
             Client:
           </Text>
           <Text fontSize="lg" fontWeight="bold" color="whatsapp.600">
-            {clientData?.state.name}
+            {clientData?.name}
           </Text>
           <Text fontSize="sm" color="whatsapp.800">
-            {clientData?.state.id}
+            {clientData?.id}
           </Text>
         </Box>
       </Box>
       <Box
         width="50%"
-        height="50%"
         borderRadius="md"
         bg="blackAlpha.300"
         display="flex"

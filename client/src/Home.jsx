@@ -1,10 +1,23 @@
-import { Box, Button, Image, Input, Text, useToast } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Image,
+  Input,
+  Stack,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import WhatsAppQRCode from "./components/WhatsAppQRCode";
+import { useClient } from "./contexts/clientContext";
+import { create_UUID } from "./Functions/createUUID";
 import "./index.css";
 
 export default function Home({ socket }) {
+  const { registerClient } = useClient();
   const navigate = useNavigate();
   const [allClient, setAllClient] = useState();
   const [qr, setQr] = useState("");
@@ -16,22 +29,18 @@ export default function Home({ socket }) {
     name: "",
   });
   const toast = useToast();
-  function create_UUID() {
-    var dt = new Date().getTime();
-    var uuid = "xxxxyxxxxx".replace(/[xy]/g, function (c) {
-      var r = (dt + Math.random() * 16) % 16 | 0;
-      dt = Math.floor(dt / 16);
-      return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
-    });
-    return uuid;
-  }
+
   function handleNewClientForm(e) {
     e.preventDefault();
     setLoading(true);
-    const id = clientData.id;
-    console.log({ id: id, name: clientData.name });
-    socket.emit("set_client", { id: id, name: clientData.name });
+    console.log({ id: clientData.id, name: clientData.name });
+    socket.emit("set_client", { id: clientData.id, name: clientData.name });
   }
+  useEffect(() => {
+    socket.on("disconnected", () => {
+      registerClient("", "");
+    });
+  }, []);
   useEffect(() => {
     socket.on("recieve_message", (data) => {
       if (clientSet.current) return;
@@ -57,10 +66,11 @@ export default function Home({ socket }) {
       toast({
         title: data.message,
         status: "success",
-        duration: 5000,
+        duration: 2000,
         isClosable: true,
       });
-      navigate("/menu", { state: { id: data.id, name: data.name } });
+      registerClient(data.id, data.name);
+      navigate("/menu");
     });
   }, [socket]);
   useEffect(() => {
@@ -99,31 +109,30 @@ export default function Home({ socket }) {
               alignItems: "center",
             }}
           >
-            <Text color="whatsapp.300">Enter client name</Text>
-            <Input
-              isRequired={true}
-              maxWidth="xs"
-              bg="gray.700"
-              borderColor="whatsapp.800"
-              placeholder="Enter name here"
-              type="text"
-              onChange={(e) => {
-                setServerData({
-                  ...clientData,
-                  id: create_UUID(),
-                  name: e.target.value,
-                });
-              }}
-              value={clientData.name}
-            />
-            <Button
-              type="submit"
-              isLoading={loading}
-              loadingText="Please Wait"
-              colorScheme="whatsapp"
-            >
-              Submit
-            </Button>
+            <Stack direction="row" alignItems="flex-end">
+              <FormControl>
+                <FormLabel color="whatsapp.300">Enter client name</FormLabel>
+                <Input
+                  isRequired={true}
+                  maxWidth="xs"
+                  bg="gray.700"
+                  borderColor="whatsapp.800"
+                  placeholder="Enter name here"
+                  type="text"
+                  onChange={(e) => {
+                    setServerData({
+                      ...clientData,
+                      id: create_UUID(),
+                      name: e.target.value,
+                    });
+                  }}
+                  value={clientData.name}
+                />
+              </FormControl>
+              <Button type="submit" isLoading={loading} colorScheme="whatsapp">
+                Submit
+              </Button>
+            </Stack>
             <Box
               display="flex"
               flexDirection="column"

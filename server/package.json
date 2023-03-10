@@ -2,11 +2,13 @@
   "name": "whatsapp-bot-server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "bin": {
+    "main": "server.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node server.js",
+    "build": "rm -rf build && pkg . --out-path build",
+    "postbuild": "cp -R ./node_modules/puppeteer/.local-chromium build/chromium"
   },
   "author": "",
   "license": "ISC",
