@@ -12,7 +12,7 @@ import {
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import WhatsAppQRCode from "./components/WhatsAppQRCode";
-import { useClient } from "./contexts/clientContext";
+import { useClient } from "./contexts/ClientContext";
 import { create_UUID } from "./Functions/createUUID";
 import "./index.css";
 

@@ -15,7 +15,7 @@ import React, { useContext, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../index.css";
 import { FaExchangeAlt } from "react-icons/fa";
-import { useClient } from "../contexts/clientContext";
+import { useClient } from "../contexts/ClientContext";
 
 export default function Menu({ socket }) {
   const { clientData, removeClient } = useClient();

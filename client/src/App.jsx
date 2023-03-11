@@ -6,7 +6,7 @@ import Menu from "./pages/Menu";
 import { io } from "socket.io-client";
 import { Box, Image, Text, useToast } from "@chakra-ui/react";
 import CreateVCard from "./pages/CreateVCard";
-import { ClientContextProvider } from "./contexts/clientContext";
+import { ClientContextProvider } from "./contexts/ClientContext";
 import FeaturesLayout from "./components/FeaturesLayout";
 import SendBulkMessages from "./pages/SendBulkMessages";
 import { TbCircleDotFilled } from "react-icons/tb";
