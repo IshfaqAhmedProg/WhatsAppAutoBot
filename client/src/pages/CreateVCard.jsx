@@ -235,7 +235,9 @@ export default function CreateVCard({ socket }) {
                             padding="4"
                             bg="gray.800"
                           >
-                            <Text fontWeight="bold">{data.name}</Text>
+                            <Text fontWeight="bold" color="whiteAlpha.800">
+                              {data.name}
+                            </Text>
                             <Text>{data.number}</Text>
                           </Box>
                         );

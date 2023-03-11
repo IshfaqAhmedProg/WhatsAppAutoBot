@@ -170,6 +170,11 @@ io.on('connection', async (socket) => {
 
             }
         })
+        socket.on('delete_task', async (taskId) => {
+            console.log('deleted task:', taskId)
+            await db.delete(`/clientsData/${clientData.id}/tasks/${taskId}`)
+            await db.delete(`/clientsData/${clientData.id}/tasksData/${taskId}`)
+        })
     })
 
 

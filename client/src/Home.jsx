@@ -37,10 +37,10 @@ export default function Home({ socket }) {
     socket.emit("set_client", { id: clientData.id, name: clientData.name });
   }
   useEffect(() => {
-    socket.on("disconnected", () => {
-      registerClient("", "");
+    socket.on("disconnect", () => {
+      setLoading(false);
     });
-  }, []);
+  }, [socket]);
   useEffect(() => {
     socket.on("recieve_message", (data) => {
       if (clientSet.current) return;
