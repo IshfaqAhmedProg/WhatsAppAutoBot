@@ -12,7 +12,8 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { BiDownload, BiTrash } from "react-icons/bi";
+import { BiDownload } from "react-icons/bi";
+import { TbTrashXFilled } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { read, utils } from "xlsx";
 import { uniqueKeys } from "../Functions/uniqueKeys";
@@ -170,9 +171,9 @@ export default function CreateVCard({ socket }) {
       <Heading color="gray.700">
         Create vCard file {"("}.vcf{")"}
       </Heading>
-      {!vCardOutput.ready ? ( //if column headers approved
+      {!vCardOutput.ready ? ( //if vcardoutput is not ready
         <form onSubmit={handleCreateVCard} style={{ height: "80%" }}>
-          {!formData.fileName ? ( //if file not approved show initial screen
+          {!formData.fileName ? ( //if filename not found then show initial form with both manual and file input
             <Box
               display="flex"
               flexDirection="column"
@@ -180,13 +181,13 @@ export default function CreateVCard({ socket }) {
               alignItems="center"
               gap="1.5em"
             >
-              {!file ? ( //if file not found show upload button
+              {!file ? ( //if file not found in file input show upload button
                 <>
                   <Stack color="whatsapp.700" position="relative">
                     <Text fontWeight="bold" color="whatsapp.500">
                       Input manually
                     </Text>
-                    {formData.manualInputData.length != 0 && (
+                    {formData.manualInputData.length != 0 && ( //if contacts are manually input then show clear and confirm button
                       <Stack
                         direction="row"
                         position="absolute"
@@ -198,9 +199,10 @@ export default function CreateVCard({ socket }) {
                           onClick={() => {
                             setFormData({ ...formData, manualInputData: [] });
                           }}
-                          leftIcon={<BiTrash />}
+                          leftIcon={<TbTrashXFilled />}
                           colorScheme="blackAlpha"
                           color="whiteAlpha.600"
+                          _hover={{ borderColor: "red.500", color: "red.500" }}
                         >
                           Clear
                         </Button>
@@ -214,7 +216,7 @@ export default function CreateVCard({ socket }) {
                       </Stack>
                     )}
                     <Stack
-                      bg="blackAlpha.500"
+                      bg="blackAlpha.400"
                       minH="3xs"
                       maxH="xs"
                       overflowY="auto"
@@ -225,7 +227,7 @@ export default function CreateVCard({ socket }) {
                         return (
                           <Box
                             key={data.number}
-                            borderRadius="sm"
+                            borderRadius="md"
                             width="100%"
                             display="flex"
                             flexDirection="column"
@@ -307,23 +309,30 @@ export default function CreateVCard({ socket }) {
                       >
                         upload file
                       </FormLabel>
+                      <Input
+                        type="file"
+                        id="fileinput"
+                        name="fileinput"
+                        hidden
+                        accept=".csv,.xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                        onChange={(e) => {
+                          setFile(e.target.files[0]);
+                        }}
+                      />
                     </>
                   )}
                 </>
               ) : (
-                <Text color="white">{file.name}</Text>
+                //if file found in file input show which file is selected and name of the file
+                <>
+                  <Text fontWeight="bold" color="whiteAlpha.500">
+                    File Selected:
+                  </Text>
+                  <Text color="white">{file.name}</Text>
+                </>
               )}
-              <Input
-                type="file"
-                id="fileinput"
-                name="fileinput"
-                hidden
-                accept=".csv,.xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                onChange={(e) => {
-                  setFile(e.target.files[0]);
-                }}
-              />
-              {file && (
+
+              {file && ( //if file exists show confirm and change file button
                 <Box display="flex" gap="8">
                   <Button
                     type="button"
@@ -347,6 +356,7 @@ export default function CreateVCard({ socket }) {
               )}
             </Box>
           ) : (
+            //if filename exists then show form for selecting headers
             <Box
               width="sm"
               display="flex"
@@ -406,6 +416,7 @@ export default function CreateVCard({ socket }) {
           )}
         </form>
       ) : (
+        //if vCard output is ready
         <Box
           display="flex"
           flexDirection="column"

@@ -154,16 +154,18 @@ io.on('connection', async (socket) => {
             })
         })
         socket.on('create_task', async (data) => {
+            var dateOptions = {};
+            dateOptions.year = dateOptions.month = dateOptions.day = dateOptions.hour = dateOptions.minute = dateOptions.second = 'numeric'
             await db.push(`/clientsData/${clientData.id}/tasks/${data.id}`, {
-                createdAt: new Date().toISOString(),
+                createdAt: new Date().toLocaleString('sv-SE', dateOptions),
                 length: data.data.length
             }, true)
             await db.push(`/clientsData/${clientData.id}/tasksData/${data.id}`, data.data, true)
         })
         socket.on('get_tasks', async (data) => {
             try {
-                const allTasks = await db.getData(`/clients[${await db.getIndex('/clients', clientData.id)}]/tasks`)
-
+                const allTasks = await db.getData(`/clientsData/${clientData.id}/tasks`)
+                socket.emit('all_tasks', allTasks)
             } catch (error) {
 
             }

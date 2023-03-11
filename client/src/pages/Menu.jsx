@@ -35,7 +35,7 @@ export default function Menu({ socket }) {
       link: "/validateNumbers",
       display: "Validate Contacts",
       description:
-        "Get all the contacts and their data, including profile picture",
+        "Validate the contacts you created vCards for, after saving the .vcf to your device",
     },
     {
       link: "/allContacts",
@@ -50,7 +50,7 @@ export default function Menu({ socket }) {
         "Send bulk messages to as many of your whatsapp contacts as you need.",
     },
   ];
-  
+
   return (
     <>
       <Link

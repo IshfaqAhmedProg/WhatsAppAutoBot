@@ -22,6 +22,9 @@ export default function App() {
     socket.on("connect", () => {
       setServerConnection(true);
     });
+    socket.on("connected", () => {
+      setServerConnection(true);
+    });
     socket.on("disconnected", () => {
       setServerConnection(false);
       navigate("/");
