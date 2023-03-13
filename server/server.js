@@ -8,7 +8,7 @@ const { Server } = require('socket.io')
 const { JsonDB, Config, DataError } = require('node-json-db');
 const path = require('path');
 const puppeteer = require('puppeteer');
-
+const mergeByProperty = require('./functions/mergeByProp')
 const isPkg = typeof process.pkg !== 'undefined';
 
 //mac path replace
@@ -39,16 +39,35 @@ server.listen(5000, () => {
     console.log("Listening to port 5000!")
 })
 
-
-function addNewClientToDB(db, dPData) {
-    try {
-        console.log("dPData", dPData);
-        db.push('/clients[]', dPData, true)
-        console.log("client added to db!")
-    } catch (error) {
-        console.log(error)
+class WhatsAppContact {
+    constructor(contactId = "",
+        contactChatId = "",
+        contactName = "unavailable",
+        contactPushName = "unavailable",
+        contactNumber = "",
+        contactVerifiedName = "unavailable",
+        contactVerifiedLevel = "",
+        contactIsWAContact = "unavailable",
+        contactLabels = "",
+        contactType = "",
+        contactProfilePicUrl = "") {
+        this.contactId = contactId;
+        this.contactChatId = contactChatId;
+        this.contactName = contactName;
+        this.contactPushName = contactPushName;
+        this.contactNumber = contactNumber;
+        this.contactVerifiedName = contactVerifiedName;
+        this.contactVerifiedLevel = contactVerifiedLevel;
+        this.contactIsWAContact = contactIsWAContact;
+        this.contactLabels = contactLabels;
+        this.contactType = contactType;
+        this.contactProfilePicUrl = contactProfilePicUrl;
     }
 }
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 io.on('connection', async (socket) => {
     const db = new JsonDB(new Config("dataPool", true, false, '/'));
     console.log("socket.id", socket.id)
@@ -120,6 +139,7 @@ io.on('connection', async (socket) => {
         socket.on('log_out', (data) => {
             console.log("logout server")
             client.destroy()
+            socket.disconnect();
         })
         //socket to get all contacts
         socket.on('get_all_contacts', (data) => {
@@ -132,20 +152,20 @@ io.on('connection', async (socket) => {
                 for (let index = 0; index < contacts.length; index++) {
                     const contact = contacts[index];
                     if (!contact.isGroup && !contact.isMe && !contact.id._serialized.endsWith('@lid')) {
-                        const validate = {
-                            contactId: contact.id.user,
-                            contactChatId: contact.id._serialized,
-                            contactName: contact.name || "unavailable",
-                            contactPushName: contact.pushname || "unavailable",
-                            contactNumber: contact.number || "unavailable",
-                            contactVerifiedName: contact.verifiedName || "unavailable",
-                            contactVerifiedLevel: contact.verifiedLevel || "unavailable",
-                            contactIsWAContact: contact.isWAContact,
-                            contactLabels: contact.labels,
-                            contactType: contact.type,
-                        }
+                        const validate = new WhatsAppContact(
+                            contact.id.user,
+                            contact.id._serialized,
+                            contact.name,
+                            contact.pushname,
+                            contact.number,
+                            contact.verifiedName,
+                            contact.verifiedLevel,
+                            contact.isWAContact,
+                            contact.labels,
+                            contact.type,
+                        )
                         if (data.profilePicUrl)
-                            validate.contactProfilePicUrl = await contact.getProfilePicUrl()
+                            validate.contactProfilePicUrl = await contact.getProfilePicUrl() || ""
                         validatedData.push(validate);
                     }
                 }
@@ -170,91 +190,52 @@ io.on('connection', async (socket) => {
 
             }
         })
+        socket.on('get_task_data', async (taskId) => {
+            try {
+                const taskData = await db.getData(`/clientsData/${clientData.id}/tasksData/${taskId}`)
+                socket.emit('task_data', taskData);
+            } catch (error) {
+                console.log(error)
+            }
+        })
         socket.on('delete_task', async (taskId) => {
             console.log('deleted task:', taskId)
             await db.delete(`/clientsData/${clientData.id}/tasks/${taskId}`)
             await db.delete(`/clientsData/${clientData.id}/tasksData/${taskId}`)
         })
+        socket.on('get_task_results', async (taskId) => {
+            const taskData = await db.getData(`/clientsData/${clientData.id}/tasksData/${taskId}`)
+            const dbContactData = await db.getData(`/clientsData/${clientData.id}/contacts`)//get data from db
+            const match = []
+            const noMatch = []
+            taskData.filter(taskelement => dbContactData.some((contact) =>
+                taskelement.number === contact.contactNumber && match.push({
+                    ...contact,
+                    queryName: taskelement.name || "",
+                    queryNumber: taskelement.number || "",
+                })));
+            taskData.filter(o1 => !match.some(o2 => o1.number === o2.queryNumber) && noMatch.push({
+                ...new WhatsAppContact(),
+                queryName: o1.name || "",
+                queryNumber: o1.number || "",
+            }))
+
+            const result = [...match, ...noMatch]
+            console.log("getting task results for ", taskId)
+            console.log("resultSize", result.length)
+            result.length < 10 && console.log("result", result)
+            socket.emit('task_results', result);
+        })
+        socket.on('send_message', async (data) => {
+            for (let index = 0; index < data.reciever.length; index++) {
+                const reciever = data.reciever[index];
+                await timeout(3000);
+                console.log("message sent to ",reciever)
+                // await client.sendMessage(reciever, data.message)
+            }
+            socket.emit('message_sent', true)
+        })
     })
 
 
 })
-// app.use('/api',
-//     async (req, res, next) => {
-
-//         var data = [];
-//         const client = new Client({
-//             authStrategy: new LocalAuth()
-//         });
-//         client.initialize();
-//         console.log(client);
-//         client.on('authenticated', (session) => {
-//             console.log("session", session)
-//         })
-//         await checkIfQR(client).then(qr => {
-//             console.log("qr", qr)
-//             res.json(qr)
-//         })
-//         client.on('ready', () => {
-//             console.log('Client is ready!');
-//             res.sendStatus(200)
-//         });
-//     }, (req, res, next) => {
-
-//     })
-// app.get('/api', (req, res) => {
-//     res.json({ users: ["userOne", "userTwo"] });
-//     console.log("run this")
-// })
-// function checkIfQR(client) {
-//     return new Promise((resolve, reject) => {
-//         client.on('qr', qr => {
-//             console.log(qr)
-//             qrcode.generate(qr, { small: true });
-//             resolve(qr);
-//         });
-//     })
-// }
-// app.listen(5000, () => { console.log("server started on port 5000"); })
-// function runWhatsappWeb(clientId) {
-//     var password = encodeURIComponent("hpWMLUYgnCbY1A9P")
-//     mongoose.connect(`mongodb+srv://ishfaqahmed0837:${password}@whatsappvalidator.ou3i6ti.mongodb.net/?retryWrites=true&w=majority`).then(() => {
-//         var data = [];
-//         const store = new MongoStore({ mongoose: mongoose });
-//         const client = new Client({
-//             authStrategy: new RemoteAuth({
-//                 clientId: clientId,
-//                 store: store,
-//                 backupSyncIntervalMs: 300000
-//             })
-//         });
-//         client.initialize();
-
-//         client.on('qr', qr => {
-//             data = qr;
-//             qrcode.generate(qr, { small: true });
-//         });
-
-//         client.on('ready', () => {
-//             console.log('Client is ready!');
-//             client.getContacts().then(contacts => {
-//                 const validatedData = [];
-//                 contacts.forEach(contact => {
-//                     if (contact.isGroup == false) {
-//                         const validate = {
-//                             name: contact.name || "unavailable",
-//                             originalName: contact.pushname || "unavailable",
-//                             number: contact.number || "unavailable",
-//                             hasWhatsApp: contact.isWAContact
-//                         }
-//                         contact.getProfilePicUrl()
-//                         validatedData.push(validate);
-//                     }
-//                 });
-//                 data = validatedData;
-//                 console.log(data)
-//             })
-//         });
-//         return data;
-//     });
-// }

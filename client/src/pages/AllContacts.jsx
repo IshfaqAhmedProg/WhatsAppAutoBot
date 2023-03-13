@@ -16,6 +16,9 @@ import React, { useEffect, useState } from "react";
 import { BiUserCircle } from "react-icons/bi";
 import { RxSlash } from "react-icons/rx";
 import { utils, writeFile } from "sheetjs-style-v2";
+import ContactCard from "../components/ContactCard";
+import StatsBox from "../components/StatsBox";
+import { downloadFile } from "../functions/downloadFile";
 export default function AllContacts({ socket }) {
   const [loading, setLoading] = useState(false);
   const [allContacts, setAllContacts] = useState([]);
@@ -27,44 +30,7 @@ export default function AllContacts({ socket }) {
     setLoading(true);
     socket.emit("get_all_contacts", { profilePicUrl: true });
   }
-  function downloadFile(filetype) {
-    const headers = Object.keys(allContacts[0]);
-    const aoaData = [[]];
-    allContacts.map((obj) => {
-      aoaData.push(Object.values(obj));
-    });
-    console.log("aoaData", aoaData);
-    downloadFormatted(headers, aoaData, filetype);
-  }
-  function downloadFormatted(headerArray, data, fileType) {
-    headerArray.forEach((header) => {
-      data[0].push({
-        v: `${header}`,
-        t: "s",
-        s: {
-          font: { bold: true, color: { rgb: "FFFFFFFF" } },
-          fill: { fgColor: { rgb: "FF7B68EE" } },
-          border: {
-            top: { style: "medium", color: { rgb: "FF7B68EE" } },
-            bottom: { style: "medium", color: { rgb: "FF7B68EE" } },
-            left: { style: "medium", color: { rgb: "FF7B68EE" } },
-            right: { style: "medium", color: { rgb: "FF7B68EE" } },
-          },
-          alignment: { wrapText: true },
-        },
-      });
-    });
-    console.table("data", data);
-    const worksheet = utils.aoa_to_sheet(data);
-    const workbook = utils.book_new();
-    utils.book_append_sheet(workbook, worksheet);
-    writeFile(
-      workbook,
-      `WhatsappValidationResult_${new Intl.DateTimeFormat("en-US").format(
-        new Date(Date.now())
-      )}_${Math.floor(Math.random() * 420)}.${fileType}`
-    );
-  }
+
   useEffect(() => {
     socket.on("set_all_contacts", (data) => {
       setAllContacts(data);
@@ -87,27 +53,12 @@ export default function AllContacts({ socket }) {
     <>
       <Heading color="gray.700">All Contacts</Heading>
       {console.log("allContacts", allContacts)}
-      <Box
-        position="absolute"
-        bottom="5%"
-        right="5%"
-        fontSize="xs"
-        color="whiteAlpha.500"
-        display="flex"
-        flexDirection="column"
-        alignItems="flex-end"
-      >
-        <Box display="flex">
-          <Text color="whatsapp.500" fontWeight="bold">
-            {contactsStat.totalWhatsAppContacts}
-          </Text>
-          <RxSlash fontSize="18px" />
-          <Text color="whiteAlpha.600" fontWeight="bold">
-            {contactsStat.totalContacts}
-          </Text>
-        </Box>
-        <Text>WhatsApp Contacts</Text>
-      </Box>
+      <StatsBox
+        count={contactsStat.totalContacts}
+        total={contactsStat.totalWhatsAppContacts}
+        title="WhatsApp Contacts"
+      />
+      
 
       <Box
         width="lg"
@@ -123,55 +74,19 @@ export default function AllContacts({ socket }) {
         padding="2"
         bg="blackAlpha.300"
       >
+        <Text fontWeight="bold" color="gray.700">
+          Contacts in your phone
+        </Text>
         {allContacts.map((contact) => {
-          return (
-            <Card
-              bg="blackAlpha.600"
-              key={contact.contactId}
-              position="relative"
-            >
-              <CardBody display="flex" gap="3">
-                {contact.contactProfilePicUrl ? (
-                  <Image
-                    src={contact.contactProfilePicUrl}
-                    boxSize="50px"
-                    borderRadius="50%"
-                  />
-                ) : (
-                  <BiUserCircle
-                    size="50px"
-                    color="var(--chakra-colors-whatsapp-800)"
-                  />
-                )}
-                <Box>
-                  <Stack direction="row" color="whiteAlpha.800">
-                    <Text fontWeight="bold" fontSize="md">
-                      {contact.contactName}
-                    </Text>
-                    <Text color="whiteAlpha.500" fontSize="md">
-                      {contact.contactPushName}
-                    </Text>
-                  </Stack>
-                  <Tag
-                    position="absolute"
-                    top="15%"
-                    right="3%"
-                    variant="outline"
-                    colorScheme={
-                      contact.contactIsWAContact ? "whatsapp" : "red"
-                    }
-                  >
-                    <TagLabel>
-                      {contact.contactIsWAContact ? "Valid" : "Invalid"}
-                    </TagLabel>
-                  </Tag>
-                  <Text color="whiteAlpha.800" fontSize="md">
-                    {contact.contactNumber}
-                  </Text>
-                </Box>
-              </CardBody>
-            </Card>
-          );
+          if (contact.contactName != "unavailable")
+            return <ContactCard key={contact.contactId} contact={contact} />;
+        })}
+        <Text fontWeight="bold" color="gray.700">
+          Contacts in whatsapp's database
+        </Text>
+        {allContacts.map((contact) => {
+          if (contact.contactName == "unavailable")
+            return <ContactCard key={contact.contactId} contact={contact} />;
         })}
       </Box>
       <Button
@@ -184,7 +99,14 @@ export default function AllContacts({ socket }) {
       <Button
         isLoading={loading}
         colorScheme="whatsapp"
-        onClick={() => downloadFile("xlsx")}
+        onClick={() =>
+          downloadFile(
+            allContacts,
+            `AllContacts_${new Intl.DateTimeFormat(
+              "en-US"
+            ).format()}_${Math.floor(Math.random() * 420)}.xlsx`
+          )
+        }
       >
         Download Results
       </Button>

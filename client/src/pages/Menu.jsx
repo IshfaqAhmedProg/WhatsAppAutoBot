@@ -33,7 +33,7 @@ export default function Menu({ socket }) {
     },
     {
       link: "/validateNumbers",
-      display: "Validate Contacts",
+      display: "Validate Numbers",
       description:
         "Validate the contacts you created vCards for, after saving the .vcf to your device",
     },
@@ -44,7 +44,7 @@ export default function Menu({ socket }) {
         "Engage with your whatsapp contacts, by sending individual messages and more.",
     },
     {
-      link: "/sendMessage",
+      link: "/sendBulkMessages",
       display: "Send Bulk Messages",
       description:
         "Send bulk messages to as many of your whatsapp contacts as you need.",

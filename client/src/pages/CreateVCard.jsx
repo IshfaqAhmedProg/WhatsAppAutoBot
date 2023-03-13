@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Card,
+  CardBody,
   Divider,
   FormControl,
   FormLabel,
@@ -16,10 +18,17 @@ import { BiDownload } from "react-icons/bi";
 import { TbTrashXFilled } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { read, utils } from "xlsx";
-import { uniqueKeys } from "../Functions/uniqueKeys";
+import { uniqueKeys } from "../functions/uniqueKeys";
 import vCardsJS from "vcards-js";
 import { isMobilePhone } from "validator";
-import { create_UUID } from "../Functions/createUUID";
+import { create_UUID } from "../functions/createUUID";
+import ContactCard from "../components/ContactCard";
+import {
+  isValidPhoneNumber,
+  parsePhoneNumber,
+  AsYouType,
+  isPossiblePhoneNumber,
+} from "libphonenumber-js";
 export default function CreateVCard({ socket }) {
   const [file, setFile] = useState();
   const [manualInput, setManualInput] = useState({
@@ -30,7 +39,6 @@ export default function CreateVCard({ socket }) {
   const [selectedHeaders, setSelectedHeaders] = useState({
     Numbers: "",
     Name: "",
-    Email: "",
   });
   const [vCardOutput, setVCardOutput] = useState({
     ready: false,
@@ -108,13 +116,10 @@ export default function CreateVCard({ socket }) {
       var vCard = vCardsJS();
       vCard.firstName = contact[selectedHeaders.Name];
       vCard.workPhone = contact[selectedHeaders.Numbers];
-      vCard.email = contact[selectedHeaders.Email];
       mainString = mainString + vCard.getFormattedString();
       taskObject.data.push({
-        id: create_UUID(),
         name: contact[selectedHeaders.Name],
         number: contact[selectedHeaders.Numbers],
-        email: contact[selectedHeaders.Email],
       });
       console.log("mainString", mainString);
     });
@@ -147,9 +152,17 @@ export default function CreateVCard({ socket }) {
     var vCardURL = window.URL.createObjectURL(vCardBlob);
 
     setVCardOutput({ ready: true, downloadUrl: vCardURL });
+    toast({
+      title: "Task Created!",
+      description: `Upload the .vcf to your whatsapp device and then check Validate Numbers to see the results.`,
+      status: "success",
+      duration: 5000,
+      isClosable: false,
+    });
   }
   function validateManualInput() {
-    const numberValid = isMobilePhone(manualInput.number);
+    const numberValid = isValidPhoneNumber("+" + manualInput.number);
+    console.log(numberValid);
     if (numberValid) {
       setFormData({
         ...formData,
@@ -225,21 +238,11 @@ export default function CreateVCard({ socket }) {
                     >
                       {formData.manualInputData.map((data) => {
                         return (
-                          <Box
+                          <ContactCard
                             key={data.number}
-                            borderRadius="md"
-                            width="100%"
-                            display="flex"
-                            flexDirection="column"
-                            justifyContent="space-between"
-                            padding="4"
-                            bg="gray.800"
-                          >
-                            <Text fontWeight="bold" color="whiteAlpha.800">
-                              {data.name}
-                            </Text>
-                            <Text>{data.number}</Text>
-                          </Box>
+                            name={data.name}
+                            number={data.number}
+                          />
                         );
                       })}
                     </Stack>
@@ -247,6 +250,8 @@ export default function CreateVCard({ socket }) {
                       <FormControl>
                         <FormLabel>Name</FormLabel>
                         <Input
+                          placeholder="Name can be anything (email,id etc.)"
+                          _placeholder={{ fontSize: "xs" }}
                           type="text"
                           borderColor="whatsapp.700"
                           color="whatsapp.500"
@@ -262,6 +267,8 @@ export default function CreateVCard({ socket }) {
                       <FormControl>
                         <FormLabel>Phone Number</FormLabel>
                         <Input
+                          placeholder="Enter phone number with country code"
+                          _placeholder={{ fontSize: "xs" }}
                           type="text"
                           borderColor="whatsapp.700"
                           color="whatsapp.500"
@@ -269,7 +276,7 @@ export default function CreateVCard({ socket }) {
                           onChange={(e) => {
                             setManualInput({
                               ...manualInput,
-                              number: e.target.value,
+                              number: e.target.value.replace(/[+\s-]/, ""),
                             });
                           }}
                         />

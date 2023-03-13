@@ -12,6 +12,8 @@ import SendBulkMessages from "./pages/SendBulkMessages";
 import { TbCircleDotFilled } from "react-icons/tb";
 import AllContacts from "./pages/AllContacts";
 import ValidateNumbers from "./pages/ValidateNumbers";
+import ValidationResult from "./pages/ValidationResult";
+import SelectContacts from "./components/SelectContacts";
 const socket = io.connect("http://localhost:5000");
 
 export default function App() {
@@ -87,18 +89,26 @@ export default function App() {
               path="/createVCard"
               element={<CreateVCard socket={socket} />}
             />
-            <Route
-              path="/validateNumbers"
-              element={<ValidateNumbers socket={socket} />}
-            />
+
+            <Route path="/validateNumbers">
+              <Route index element={<ValidateNumbers socket={socket} />} />
+              <Route
+                path=":taskId"
+                element={<ValidationResult socket={socket} />}
+              />
+            </Route>
+
             <Route
               path="/allContacts"
               element={<AllContacts socket={socket} />}
             />
-            <Route
-              path="/sendMessage"
-              element={<SendBulkMessages socket={socket} />}
-            />
+            <Route path="/sendBulkMessages">
+              <Route index element={<SendBulkMessages socket={socket} />} />
+              <Route
+                path=":sendType"
+                element={<SelectContacts socket={socket} />}
+              />
+            </Route>
           </Route>
         </Routes>
       </Box>
