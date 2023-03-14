@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { downloadFile } from "../functions/downloadFile";
+import { downloadFile } from "../Functions/downloadFile";
 
 export default function ValidationResult({ socket }) {
   const taskId = useParams().taskId;

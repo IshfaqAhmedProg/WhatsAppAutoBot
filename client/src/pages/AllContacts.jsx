@@ -18,7 +18,7 @@ import { RxSlash } from "react-icons/rx";
 import { utils, writeFile } from "sheetjs-style-v2";
 import ContactCard from "../components/ContactCard";
 import StatsBox from "../components/StatsBox";
-import { downloadFile } from "../functions/downloadFile";
+import { downloadFile } from "../Functions/downloadFile";
 export default function AllContacts({ socket }) {
   const [loading, setLoading] = useState(false);
   const [allContacts, setAllContacts] = useState([]);
