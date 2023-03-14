@@ -18,7 +18,6 @@ import { BiDownload } from "react-icons/bi";
 import { TbTrashXFilled } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { read, utils } from "xlsx";
-import { uniqueKeys } from "../functions/uniqueKeys";
 import vCardsJS from "vcards-js";
 import { isMobilePhone } from "validator";
 import { create_UUID } from "../functions/createUUID";
@@ -29,6 +28,13 @@ import {
   AsYouType,
   isPossiblePhoneNumber,
 } from "libphonenumber-js";
+const uniqueKeys = (objects) => {
+  const keys = objects.reduce((acc, obj) => {
+    Object.keys(obj).forEach((key) => acc.add(key));
+    return acc;
+  }, new Set());
+  return Array.from(keys);
+};
 export default function CreateVCard({ socket }) {
   const [file, setFile] = useState();
   const [manualInput, setManualInput] = useState({
