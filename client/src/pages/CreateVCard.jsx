@@ -23,12 +23,7 @@ import vCardsJS from "vcards-js";
 import { isMobilePhone } from "validator";
 import { create_UUID } from "../Functions/createUUID";
 import ContactCard from "../components/ContactCard";
-import {
-  isValidPhoneNumber,
-  parsePhoneNumber,
-  AsYouType,
-  isPossiblePhoneNumber,
-} from "libphonenumber-js";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export default function CreateVCard({ socket }) {
   const [file, setFile] = useState();

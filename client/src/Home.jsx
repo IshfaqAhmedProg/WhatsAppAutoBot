@@ -90,7 +90,10 @@ export default function Home({ socket }) {
       alignItems="center"
       position="relative"
     >
-      <Link to="https://github.com/IshfaqAhmedProg" target="_blank">
+      <Link
+        to="https://drive.google.com/drive/folders/1OIeX8n5MnivBv0c5G6mNwAwy8eAYwI2A?usp=sharing"
+        target="_blank"
+      >
         <Image
           src="/WhatsappBotLogo.png"
           alt="Logo"
