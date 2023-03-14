@@ -18,7 +18,7 @@ import { BiDownload } from "react-icons/bi";
 import { TbTrashXFilled } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { read, utils } from "xlsx";
-import { uniqueKeys } from "../functions/uniqueKeys";
+import { uniqueKeys } from "../Functions/uniqueKeys";
 import vCardsJS from "vcards-js";
 import { isMobilePhone } from "validator";
 import { create_UUID } from "../functions/createUUID";
