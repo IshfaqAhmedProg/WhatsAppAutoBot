@@ -21,7 +21,7 @@ import { read, utils } from "xlsx";
 import { uniqueKeys } from "../Functions/uniqueKeys";
 import vCardsJS from "vcards-js";
 import { isMobilePhone } from "validator";
-import { create_UUID } from "../functions/createUUID";
+import { create_UUID } from "../Functions/createUUID";
 import ContactCard from "../components/ContactCard";
 import {
   isValidPhoneNumber,
