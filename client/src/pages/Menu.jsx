@@ -23,7 +23,9 @@ export default function Menu({ socket }) {
     socket.emit("log_out", "");
     removeClient();
   }
-
+  useEffect(() => {
+    socket.emit("get_all_contacts", { profilePicUrl: true });
+  });
   const menuItems = [
     {
       link: "/createVCard",

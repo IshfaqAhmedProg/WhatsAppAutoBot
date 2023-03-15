@@ -189,7 +189,6 @@ export default function Home({ socket }) {
       ) : (
         <WhatsAppQRCode qr={qr} />
       )}
-      {console.log(clientData)}
     </Box>
   );
 }

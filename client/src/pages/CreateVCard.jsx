@@ -109,15 +109,21 @@ export default function CreateVCard({ socket }) {
     const taskObject = { id: create_UUID(), data: [] };
 
     formData.unformattedData.forEach((contact) => {
-      var vCard = vCardsJS();
-      vCard.firstName = contact[selectedHeaders.Name];
-      vCard.workPhone = contact[selectedHeaders.Numbers];
-      mainString = mainString + vCard.getFormattedString();
-      taskObject.data.push({
-        name: contact[selectedHeaders.Name],
-        number: contact[selectedHeaders.Numbers],
-      });
-      console.log("mainString", mainString);
+      const name = contact[selectedHeaders.Name];
+      const number = contact[selectedHeaders.Numbers]
+        .toString()
+        .replace(/[+\s-()]/, "");
+      if (isValidPhoneNumber("+" + number)) {
+        var vCard = vCardsJS();
+        vCard.firstName = name;
+        vCard.workPhone = number;
+        mainString = mainString + vCard.getFormattedString();
+        taskObject.data.push({
+          name: name,
+          number: number,
+        });
+        console.log("mainString", mainString);
+      }
     });
     socket.emit("create_task", taskObject);
     console.log("mainString final", mainString);
@@ -272,7 +278,7 @@ export default function CreateVCard({ socket }) {
                           onChange={(e) => {
                             setManualInput({
                               ...manualInput,
-                              number: e.target.value.replace(/[+\s-]/, ""),
+                              number: e.target.value.replace(/[+\s-()]/, ""),
                             });
                           }}
                         />

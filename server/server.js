@@ -151,7 +151,7 @@ io.on('connection', async (socket) => {
 
                 for (let index = 0; index < contacts.length; index++) {
                     const contact = contacts[index];
-                    if (!contact.isGroup && !contact.isMe && !contact.id._serialized.endsWith('@lid')) {
+                    if (!contact.isGroup && !contact.isMe && !contact.id._serialized.endsWith('@lid') && contact.name) {
                         const validate = new WhatsAppContact(
                             contact.id.user,
                             contact.id._serialized,
@@ -169,10 +169,11 @@ io.on('connection', async (socket) => {
                         validatedData.push(validate);
                     }
                 }
-                await db.push(`/clientsData/${clientData.id}/contacts`, validatedData, true)
+                await db.push(`/clientsData/${clientData.id}/contacts/contactsInDevice`, validatedData, true)
                 socket.emit('set_all_contacts', validatedData)
             })
         })
+        
         socket.on('create_task', async (data) => {
             var dateOptions = {};
             dateOptions.year = dateOptions.month = dateOptions.day = dateOptions.hour = dateOptions.minute = dateOptions.second = 'numeric'
@@ -214,6 +215,7 @@ io.on('connection', async (socket) => {
                     queryName: taskelement.name || "",
                     queryNumber: taskelement.number || "",
                 })));
+            console.log(match)
             taskData.filter(o1 => !match.some(o2 => o1.number === o2.queryNumber) && noMatch.push({
                 ...new WhatsAppContact(),
                 queryName: o1.name || "",
@@ -230,7 +232,7 @@ io.on('connection', async (socket) => {
             for (let index = 0; index < data.reciever.length; index++) {
                 const reciever = data.reciever[index];
                 await timeout(3000);
-                console.log("message sent to ",reciever)
+                console.log("message sent to ", reciever)
                 // await client.sendMessage(reciever, data.message)
             }
             socket.emit('message_sent', true)
