@@ -23,7 +23,7 @@ import vCardsJS from "vcards-js";
 import { isMobilePhone } from "validator";
 import { create_UUID } from "../Functions/createUUID";
 import ContactCard from "../components/ContactCard";
-import { isValidPhoneNumber } from "libphonenumber-js";
+import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 
 export default function CreateVCard({ socket }) {
   const [file, setFile] = useState();
@@ -109,27 +109,37 @@ export default function CreateVCard({ socket }) {
     const taskObject = { id: create_UUID(), data: [] };
 
     formData.unformattedData.forEach((contact) => {
-      const name = contact[selectedHeaders.Name];
-      const number = contact[selectedHeaders.Numbers]
-        .toString()
-        .replace(/[+\s-()]/, "");
-      if (isValidPhoneNumber("+" + number)) {
-        var vCard = vCardsJS();
-        vCard.firstName = name;
-        vCard.workPhone = number;
-        mainString = mainString + vCard.getFormattedString();
-        taskObject.data.push({
-          name: name,
-          number: number,
-        });
-        console.log("mainString", mainString);
+      if (contact[selectedHeaders.Numbers]) {
+        console.log("contact[selectedHeaders.Numbers]",contact[selectedHeaders.Numbers]);
+        const name = contact[selectedHeaders.Name];
+        const num = parsePhoneNumber(contact[selectedHeaders.Numbers]);
+        const number = num.format("E.164").replace("+", "");
+        console.log("number",number);
+        if (isValidPhoneNumber("+" + number)) {
+          var vCard = vCardsJS();
+          vCard.firstName = name;
+          vCard.workPhone = number;
+          mainString = mainString + vCard.getFormattedString();
+          taskObject.data.push({
+            name: name,
+            number: number,
+          });
+          // console.log("mainString", mainString);
+        }
       }
     });
     socket.emit("create_task", taskObject);
-    console.log("mainString final", mainString);
+    // console.log("mainString final", mainString);
     var vCardBlob = new Blob([mainString], { type: "text/vcard" });
     var vCardURL = window.URL.createObjectURL(vCardBlob);
     setVCardOutput({ ready: true, downloadUrl: vCardURL });
+    toast({
+      title: "Task Created!",
+      description: `Upload the .vcf to your whatsapp device and then check Validate Numbers to see the results.`,
+      status: "success",
+      duration: 5000,
+      isClosable: false,
+    });
   }
   function handleCreateVCardManual() {
     var mainString = "";
@@ -152,8 +162,8 @@ export default function CreateVCard({ socket }) {
     console.log("mainString final", mainString);
     var vCardBlob = new Blob([mainString], { type: "text/vcard" });
     var vCardURL = window.URL.createObjectURL(vCardBlob);
-
     setVCardOutput({ ready: true, downloadUrl: vCardURL });
+
     toast({
       title: "Task Created!",
       description: `Upload the .vcf to your whatsapp device and then check Validate Numbers to see the results.`,

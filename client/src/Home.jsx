@@ -1,12 +1,16 @@
 import {
   Box,
   Button,
+  Card,
+  CardBody,
   FormControl,
   FormLabel,
+  IconButton,
   Image,
   Input,
   Stack,
   Text,
+  Tooltip,
   useToast,
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -15,6 +19,8 @@ import WhatsAppQRCode from "./components/WhatsAppQRCode";
 import { useClient } from "./contexts/ClientContext";
 import { create_UUID } from "./Functions/createUUID";
 import "./index.css";
+import { TbTrashXFilled } from "react-icons/tb";
+import { FiLogIn } from "react-icons/fi";
 
 export default function Home({ socket }) {
   const { registerClient } = useClient();
@@ -35,6 +41,11 @@ export default function Home({ socket }) {
     setLoading(true);
     console.log({ id: clientData.id, name: clientData.name });
     socket.emit("set_client", { id: clientData.id, name: clientData.name });
+  }
+  function deleteClient(clientId) {
+    console.log(clientId);
+    setLoading(true);
+    socket.emit("delete_client", { clientId: clientId });
   }
   useEffect(() => {
     socket.on("disconnect", () => {
@@ -79,7 +90,17 @@ export default function Home({ socket }) {
       console.log(data);
     });
   }, [socket]);
-
+  useEffect(() => {
+    socket.on("client_deleted", () => {
+      setLoading(false);
+      toast({
+        title: "Client deleted!",
+        status: "success",
+        duration: 2000,
+        isClosable: false,
+      });
+    });
+  }, [socket]);
   return (
     <Box
       paddingBlock="3"
@@ -157,29 +178,59 @@ export default function Home({ socket }) {
               ) : (
                 allClient.map((client) => {
                   return (
-                    <Button
-                      isDisabled={loading}
-                      type="submit"
-                      key={client.id}
-                      width="full"
-                      colorScheme="blackAlpha"
-                      display="flex"
-                      justifyContent="space-between"
-                      size="lg"
-                      minHeight="3rem"
-                      onClick={() => {
-                        setServerData({
-                          ...clientData,
-                          id: client.id,
-                          name: client.name,
-                        });
-                      }}
-                    >
-                      <Text fontSize="md" fontWeight="bold">
-                        {client.name}
-                      </Text>
-                      <Text fontWeight="light">#{client.id}</Text>
-                    </Button>
+                    <Card key={client.id} width="full" bg="blackAlpha.600">
+                      <CardBody
+                        display="flex"
+                        justifyContent="space-between"
+                        size="lg"
+                        minHeight="3rem"
+                      >
+                        <Box>
+                          <Text
+                            fontSize="md"
+                            fontWeight="bold"
+                            color="whiteAlpha.500"
+                          >
+                            {client.name}
+                          </Text>
+                          <Text fontWeight="light">#{client.id}</Text>
+                        </Box>
+                        <Stack direction="row">
+                          <Tooltip label="Login to session">
+                            <IconButton
+                              icon={<FiLogIn />}
+                              colorScheme="blackAlpha"
+                              color="whiteAlpha.600"
+                              _hover={{
+                                borderColor: "whatsapp.500",
+                                color: "whatsapp.500",
+                              }}
+                              type="submit"
+                              onClick={() => {
+                                setServerData({
+                                  ...clientData,
+                                  id: client.id,
+                                  name: client.name,
+                                });
+                              }}
+                            />
+                          </Tooltip>
+                          <Tooltip label="Delete the client?">
+                            <IconButton
+                              icon={<TbTrashXFilled />}
+                              colorScheme="blackAlpha"
+                              color="whiteAlpha.600"
+                              _hover={{
+                                borderColor: "red.500",
+                                color: "red.500",
+                              }}
+                              onClick={() => deleteClient(client.id)}
+                              type="button"
+                            />
+                          </Tooltip>
+                        </Stack>
+                      </CardBody>
+                    </Card>
                   );
                 })
               )}

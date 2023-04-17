@@ -20,29 +20,27 @@ export default function App() {
   const navigate = useNavigate();
   const toast = useToast();
   const [serverConnection, setServerConnection] = useState(false);
-  useEffect(() => {
-    socket.on("connect", () => {
-      setServerConnection(true);
+  socket.on("connect", () => {
+    setServerConnection(true);
+  });
+  socket.on("connected", () => {
+    setServerConnection(true);
+  });
+  socket.on("disconnected", () => {
+    setServerConnection(false);
+    navigate("/");
+  });
+  socket.on("disconnect", () => {
+    toast({
+      title: "Server Error",
+      description: `You've been disconnected from the server.`,
+      status: "error",
+      duration: 5000,
+      isClosable: false,
     });
-    socket.on("connected", () => {
-      setServerConnection(true);
-    });
-    socket.on("disconnected", () => {
-      setServerConnection(false);
-      navigate("/");
-    });
-    socket.on("disconnect", () => {
-      toast({
-        title: "Server Error",
-        description: `You've been disconnected from the server.`,
-        status: "error",
-        duration: 5000,
-        isClosable: false,
-      });
-      setServerConnection(false);
-      navigate("/");
-    });
-  }, [socket]);
+    setServerConnection(false);
+    navigate("/");
+  });
   return (
     <ClientContextProvider>
       <Box

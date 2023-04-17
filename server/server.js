@@ -8,7 +8,6 @@ const { Server } = require('socket.io')
 const { JsonDB, Config, DataError } = require('node-json-db');
 const path = require('path');
 const puppeteer = require('puppeteer');
-const mergeByProperty = require('./functions/mergeByProp')
 const isPkg = typeof process.pkg !== 'undefined';
 
 //mac path replace
@@ -42,16 +41,16 @@ server.listen(5000, () => {
 class WhatsAppContact {
     constructor(contactId = "",
         contactChatId = "",
-        contactName = "unavailable",
-        contactPushName = "unavailable",
+        contactName = "",
+        contactPushName = "",
         contactNumber = "",
-        contactVerifiedName = "unavailable",
+        contactVerifiedName = "",
         contactVerifiedLevel = "",
-        contactIsWAContact = "unavailable",
+        contactIsWAContact = false,
         contactLabels = "",
         contactType = "",
         contactProfilePicUrl = "") {
-        this.contactId = contactId;
+        this.contactId = contactId || "";
         this.contactChatId = contactChatId;
         this.contactName = contactName;
         this.contactPushName = contactPushName;
@@ -70,7 +69,7 @@ function timeout(ms) {
 
 io.on('connection', async (socket) => {
     const db = new JsonDB(new Config("dataPool", true, false, '/'));
-    console.log("socket.id", socket.id)
+    console.log("Socket id", socket.id)
     var clients = [];
     const clientData = {
         id: '',
@@ -101,17 +100,21 @@ io.on('connection', async (socket) => {
 
         }
         socket.join(clientData.id)
-        console.log('connected to room', socket.client.id)
-        socket.to(socket.client.id).emit('recieve_message', 'Checking for client! Please wait...')
+        console.log('Connected to room', socket.client.id)
+        socket.to(socket.client.id).emit('recieve_message', 'Loading client! Please wait...')
 
         const client = new Client({
             authStrategy: new LocalAuth({
                 clientId: clientData.id
-            })
+            }),
+            puppeteer: {
+                args: ['--no-sandbox'],
+            }
+
         });
         client.initialize();
-        console.log("client initialised!")
-        console.log("client id", clientData.id)
+        console.log("Client initialised!")
+        console.log("Client id", clientData.id)
         client.on('qr', qr => {
             console.log(qr)
             socket.emit('qr_generated', qr)
@@ -143,7 +146,7 @@ io.on('connection', async (socket) => {
         })
         //socket to get all contacts
         socket.on('get_all_contacts', (data) => {
-            console.log("getting all contacts")
+            console.log("Syncing datapool!")
             client.getContacts().then(async (contacts) => {
                 // const dbContactData = await db.getData(`/clients[${await db.getIndex('/clients', clientData.id)}]/contacts`)//get data from db
                 // let extraContacts = dbContactData.filter(o1 => !contacts.some(o2 => o1.contactId === o2.id.user))//check if it matches data from wwebjs
@@ -170,10 +173,31 @@ io.on('connection', async (socket) => {
                     }
                 }
                 await db.push(`/clientsData/${clientData.id}/contacts/contactsInDevice`, validatedData, true)
-                socket.emit('set_all_contacts', validatedData)
+                // socket.emit('set_all_contacts', validatedData)
             })
         })
-        
+        socket.on('get_contacts_fragment', async (data) => {
+            // The array to be paginated
+            const contactsFromDb = await db.getData(`/clientsData/${clientData.id}/contacts/contactsInDevice`); // fill with your array data
+            // Calculate the total number of pages
+            const totalPages = Math.ceil(contactsFromDb.length / data.itemsPerPage);
+
+            // Calculate the start and end indexes for the specified page
+            const startIndex = (data.page - 1) * data.itemsPerPage;
+            const endIndex = startIndex + data.itemsPerPage;
+
+            // Slice the array to get the items for the specified page
+            const pageItems = contactsFromDb.slice(startIndex, endIndex);
+            // console.log(pageItems)
+            // Return the page data
+            socket.emit('set_contacts_fragment',
+                {
+                    page: data.page,
+                    totalPages: totalPages,
+                    items: pageItems
+                }
+            )
+        })
         socket.on('create_task', async (data) => {
             var dateOptions = {};
             dateOptions.year = dateOptions.month = dateOptions.day = dateOptions.hour = dateOptions.minute = dateOptions.second = 'numeric'
@@ -206,7 +230,7 @@ io.on('connection', async (socket) => {
         })
         socket.on('get_task_results', async (taskId) => {
             const taskData = await db.getData(`/clientsData/${clientData.id}/tasksData/${taskId}`)
-            const dbContactData = await db.getData(`/clientsData/${clientData.id}/contacts`)//get data from db
+            const dbContactData = await db.getData(`/clientsData/${clientData.id}/contacts/contactsInDevice`)//get data from db
             const match = []
             const noMatch = []
             taskData.filter(taskelement => dbContactData.some((contact) =>
@@ -215,7 +239,7 @@ io.on('connection', async (socket) => {
                     queryName: taskelement.name || "",
                     queryNumber: taskelement.number || "",
                 })));
-            console.log(match)
+            // console.log(match)
             taskData.filter(o1 => !match.some(o2 => o1.number === o2.queryNumber) && noMatch.push({
                 ...new WhatsAppContact(),
                 queryName: o1.name || "",
@@ -238,6 +262,24 @@ io.on('connection', async (socket) => {
             socket.emit('message_sent', true)
         })
     })
-
+    socket.on('delete_client', async (data) => {
+        console.log(`Deleting ${data.clientId}`)
+        //delete clients from client aggregate /clients[]
+        try {
+            await db.delete(`/clients[` + await db.getIndex("/clients", data.clientId) + "]")
+            socket.emit('client_deleted');
+            console.log(`Deleted ${data.clientId} `)
+        } catch (error) {
+            console.log(`Error deleting ${data.clientId} `)
+        }
+        //delete clients data
+        try {
+            await db.delete(`/clientsData/${data.clientId}`)
+            socket.emit('client_deleted');
+            console.log(`Deleted ${data.clientId}'s data`)
+        } catch (error) {
+            console.log(`Error deleting clients Data${data.clientId} `)
+        }
+    })
 
 })
