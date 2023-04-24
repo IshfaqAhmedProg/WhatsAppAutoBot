@@ -69,6 +69,7 @@ export default function App() {
         padding="2em"
         marginInline="auto"
         width="70%"
+        maxW="container.md"
         height="80%"
         display="flex"
         flexDirection="column"
@@ -84,23 +85,14 @@ export default function App() {
             <Route path="/createVCard" element={<CreateVCard />} />
 
             <Route path="/validateNumbers">
-              <Route index element={<ValidateNumbers  />} />
-              <Route
-                path=":taskId"
-                element={<ValidationResult  />}
-              />
+              <Route index element={<ValidateNumbers />} />
+              <Route path=":taskId" element={<ValidationResult />} />
             </Route>
 
-            <Route
-              path="/allContacts"
-              element={<AllContacts  />}
-            />
+            <Route path="/allContacts" element={<AllContacts />} />
             <Route path="/sendBulkMessages">
-              <Route index element={<SendBulkMessages  />} />
-              <Route
-                path=":sendType"
-                element={<SelectContacts  />}
-              />
+              <Route index element={<SendBulkMessages />} />
+              <Route path=":sendType" element={<SelectContacts />} />
             </Route>
           </Route>
         </Routes>

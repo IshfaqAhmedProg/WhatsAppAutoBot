@@ -114,6 +114,7 @@ export default function Home() {
       color="white"
       alignItems="center"
       position="relative"
+      width="100%"
     >
       <Link
         to="https://drive.google.com/drive/folders/1OIeX8n5MnivBv0c5G6mNwAwy8eAYwI2A?usp=sharing"
@@ -135,6 +136,7 @@ export default function Home() {
               flexDirection: "column",
               gap: "1em",
               alignItems: "center",
+              width: "100%",
             }}
           >
             <Stack direction="row" alignItems="flex-end">
@@ -169,7 +171,8 @@ export default function Home() {
               borderWidth="1px"
               borderRadius="md"
               borderColor="whatsapp.800"
-              minWidth="lg"
+              width="80%"
+              maxW="container.md"
               height="xs"
               overflowY="auto"
               maxHeight="xs"
@@ -188,6 +191,7 @@ export default function Home() {
                         justifyContent="space-between"
                         size="lg"
                         minHeight="3rem"
+                        flexWrap="wrap"
                       >
                         <Box>
                           <Text
