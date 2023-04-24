@@ -23,8 +23,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ContactCard from "../components/ContactCard";
 import StatsBox from "../components/StatsBox";
+import { useClient } from "../contexts/ClientContext";
 
-export default function SendBulkMessages({ socket }) {
+export default function SendBulkMessages() {
+  const { socket } = useClient();
   const [message, setMessage] = useState("");
   const [localContacts, setLocalContacts] = useState([]);
   const [whatsappContacts, setWhatsappContacts] = useState([]);

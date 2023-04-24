@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "bin": {
-    "main": "server.js"
+    "main": "src/index.js"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "node src/index.js",
     "build": "rm -rf build && pkg . --out-path build",
     "postbuild": "cp -R ./node_modules/puppeteer/.local-chromium build/chromium"
   },

@@ -22,7 +22,8 @@ import "./index.css";
 import { TbTrashXFilled } from "react-icons/tb";
 import { FiLogIn } from "react-icons/fi";
 
-export default function Home({ socket }) {
+export default function Home() {
+  const { socket } = useClient();
   const { registerClient } = useClient();
   const navigate = useNavigate();
   const [allClient, setAllClient] = useState();
@@ -74,14 +75,17 @@ export default function Home({ socket }) {
   }, [socket]);
   useEffect(() => {
     socket.on("client_ready", (data) => {
-      toast({
-        title: data.message,
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-      });
-      registerClient(data.id, data.name);
-      navigate("/menu");
+      if (!clientReady.current) {
+        toast({
+          title: data.message,
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+        registerClient(data.id, data.name);
+        navigate("/menu");
+        clientReady.current = true;
+      }
     });
   }, [socket]);
   useEffect(() => {

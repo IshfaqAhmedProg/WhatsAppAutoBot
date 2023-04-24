@@ -22,8 +22,10 @@ import ContactCard from "../components/ContactCard";
 import StatsBox from "../components/StatsBox";
 import { downloadFile } from "../Functions/downloadFile";
 import { FiArrowDown } from "react-icons/fi";
-export default function AllContacts({ socket }) {
-  const itemsPerPage = 2;
+import { useClient } from "../contexts/ClientContext";
+export default function AllContacts() {
+  const { socket } = useClient();
+  const itemsPerPage = 20;
   const [loading, setLoading] = useState(false);
   const [allContacts, setAllContacts] = useState([]);
   const [contactsStat, setContactsStat] = useState({
@@ -33,6 +35,7 @@ export default function AllContacts({ socket }) {
   const [currentPageStat, setCurrentPageStat] = useState({
     page: 1,
     totalPages: 0,
+    totalContacts: 0,
   });
   function getFragment() {
     if (currentPageStat.page <= currentPageStat.totalPages) {
@@ -53,34 +56,31 @@ export default function AllContacts({ socket }) {
   useEffect(() => {
     socket.on("set_contacts_fragment", (data) => {
       console.log("response", data);
-      setAllContacts((allContacts) => [
-        ...new Set([...allContacts, ...data.items]),
-      ]);
-      const whatsappcontacts = data.items.filter((contact) => {
-        return contact.contactIsWAContact === true;
-      });
-      console.log("whatsappcontacts", whatsappcontacts);
-      setContactsStat((current) => ({
-        totalContacts: current.totalContacts + data.items.length,
-        totalWhatsAppContacts:
-          current.totalWhatsAppContacts + whatsappcontacts.length,
-      }));
+      setAllContacts((allContacts) =>
+        [
+          ...new Set(
+            [...allContacts, ...data.items].map((obj) => JSON.stringify(obj))
+          ),
+        ].map((str) => JSON.parse(str))
+      );
+
       setCurrentPageStat({
         page: data.page,
         totalPages: data.totalPages,
+        totalContacts: data.totalContacts,
       });
       setLoading(false);
     });
-  }, [socket, allContacts, currentPageStat]);
+  }, [socket]);
 
   return (
     <>
       <Heading color="gray.700">All Contacts</Heading>
       {console.log("allContacts", allContacts)}
       <StatsBox
-        count={contactsStat.totalContacts}
-        total={contactsStat.totalWhatsAppContacts}
-        title="WhatsApp Contacts"
+        count={allContacts.length}
+        total={currentPageStat.totalContacts}
+        title="Contacts shown"
       />
 
       <Box

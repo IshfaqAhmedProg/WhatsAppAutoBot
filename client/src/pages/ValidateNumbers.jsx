@@ -17,14 +17,17 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { TbTrashXFilled } from "react-icons/tb";
 import { MdContactPhone, MdTask } from "react-icons/md";
 import vCardsJS from "vcards-js";
 import { Link, useNavigate } from "react-router-dom";
+import { useClient } from "../contexts/ClientContext";
 
-export default function ValidateNumbers({ socket }) {
+export default function ValidateNumbers() {
+  const { socket } = useClient();
   const navigate = useNavigate();
+  const shouldGetContacts = useRef(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [allTasks, setAllTasks] = useState([]);
   const [downloadUrl, setDownloadUrl] = useState("");
@@ -76,8 +79,11 @@ export default function ValidateNumbers({ socket }) {
     });
   }, [socket]);
   useEffect(() => {
-    socket.emit("get_all_contacts", { profilePicUrl: true });
-    socket.emit("get_tasks", "");
+    if (shouldGetContacts.current) {
+      shouldGetContacts.current = false;
+      socket.emit("get_all_contacts", { profilePicUrl: true });
+      socket.emit("get_tasks", "");
+    }
   }, []);
 
   const ConfirmModal = ({ command, message }) => {

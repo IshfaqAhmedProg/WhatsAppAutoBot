@@ -3,10 +3,8 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import "./index.css";
 import Home from "./Home";
 import Menu from "./pages/Menu";
-import { io } from "socket.io-client";
 import { Box, Image, Text, useToast } from "@chakra-ui/react";
 import CreateVCard from "./pages/CreateVCard";
-import { ClientContextProvider } from "./contexts/ClientContext";
 import FeaturesLayout from "./components/FeaturesLayout";
 import SendBulkMessages from "./pages/SendBulkMessages";
 import { TbCircleDotFilled } from "react-icons/tb";
@@ -14,9 +12,10 @@ import AllContacts from "./pages/AllContacts";
 import ValidateNumbers from "./pages/ValidateNumbers";
 import ValidationResult from "./pages/ValidationResult";
 import SelectContacts from "./components/SelectContacts";
-const socket = io.connect("http://localhost:5000");
+import { useClient } from "./contexts/ClientContext";
 
 export default function App() {
+  const { socket } = useClient();
   const navigate = useNavigate();
   const toast = useToast();
   const [serverConnection, setServerConnection] = useState(false);
@@ -42,7 +41,7 @@ export default function App() {
     navigate("/");
   });
   return (
-    <ClientContextProvider>
+    <>
       <Box
         position="absolute"
         top="5%"
@@ -70,7 +69,6 @@ export default function App() {
         padding="2em"
         marginInline="auto"
         width="70%"
-        maxW="3xl"
         height="80%"
         display="flex"
         flexDirection="column"
@@ -80,36 +78,33 @@ export default function App() {
         position="relative"
       >
         <Routes>
-          <Route path="/" element={<Home socket={socket} />} />
-          <Route path="/menu" element={<Menu socket={socket} />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/menu" element={<Menu />} />
           <Route element={<FeaturesLayout />}>
-            <Route
-              path="/createVCard"
-              element={<CreateVCard socket={socket} />}
-            />
+            <Route path="/createVCard" element={<CreateVCard />} />
 
             <Route path="/validateNumbers">
-              <Route index element={<ValidateNumbers socket={socket} />} />
+              <Route index element={<ValidateNumbers  />} />
               <Route
                 path=":taskId"
-                element={<ValidationResult socket={socket} />}
+                element={<ValidationResult  />}
               />
             </Route>
 
             <Route
               path="/allContacts"
-              element={<AllContacts socket={socket} />}
+              element={<AllContacts  />}
             />
             <Route path="/sendBulkMessages">
-              <Route index element={<SendBulkMessages socket={socket} />} />
+              <Route index element={<SendBulkMessages  />} />
               <Route
                 path=":sendType"
-                element={<SelectContacts socket={socket} />}
+                element={<SelectContacts  />}
               />
             </Route>
           </Route>
         </Routes>
       </Box>
-    </ClientContextProvider>
+    </>
   );
 }

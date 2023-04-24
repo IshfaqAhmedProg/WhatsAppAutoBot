@@ -1,31 +1,24 @@
-import {
-  Badge,
-  Box,
-  Button,
-  Heading,
-  Image,
-  LinkOverlay,
-  Stat,
-  StatLabel,
-  StatNumber,
-  Tag,
-  Text,
-} from "@chakra-ui/react";
-import React, { useContext, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Box, Button, Heading, Image, Text } from "@chakra-ui/react";
+import React, { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import "../index.css";
 import { FaExchangeAlt } from "react-icons/fa";
 import { useClient } from "../contexts/ClientContext";
 
-export default function Menu({ socket }) {
+export default function Menu() {
+  const { socket } = useClient();
   const { clientData, removeClient } = useClient();
+  const shouldGetContacts = useRef(true);
   function changeClient() {
     socket.emit("log_out", "");
     removeClient();
   }
   useEffect(() => {
-    socket.emit("get_all_contacts", { profilePicUrl: true });
-  });
+    if (shouldGetContacts.current) {
+      shouldGetContacts.current = false;
+      socket.emit("get_all_contacts", { profilePicUrl: true });
+    }
+  }, []);
   const menuItems = [
     {
       link: "/createVCard",
@@ -92,19 +85,17 @@ export default function Menu({ socket }) {
           </Button>
         </Link>
         <Box my="2">
-          <Text color="gray.700" fontSize="xs">
-            Client:
-          </Text>
-          <Text fontSize="lg" fontWeight="bold" color="whatsapp.600">
+          <Text color="gray.700">Client:</Text>
+          <Text fontWeight="bold" color="whatsapp.600">
             {clientData?.name}
           </Text>
-          <Text fontSize="sm" color="whatsapp.800">
-            {clientData?.id}
-          </Text>
+          <Text color="whatsapp.800">{clientData?.id}</Text>
         </Box>
       </Box>
       <Box
-        width="50%"
+        w="70%"
+        maxW="md"
+        minW="xs"
         borderRadius="md"
         bg="blackAlpha.300"
         display="flex"
