@@ -22,6 +22,7 @@ import StatsBox from "../components/StatsBox";
 import { downloadFile } from "../Functions/downloadFile";
 import { FiArrowDown } from "react-icons/fi";
 import { useClient } from "../contexts/ClientContext";
+import PageTitle from "../components/PageTitle";
 export default function AllContacts() {
   const { socket } = useClient();
   const itemsPerPage = 20;
@@ -74,7 +75,7 @@ export default function AllContacts() {
 
   return (
     <>
-      <Heading color="gray.700">All Contacts</Heading>
+      <PageTitle>All Contacts</PageTitle>
       {console.log("allContacts", allContacts)}
       <StatsBox
         count={allContacts.length}
@@ -120,7 +121,7 @@ export default function AllContacts() {
         })} */}
       </Box>
 
-      <Button
+      {/* <Button
         isLoading={loading}
         colorScheme="whatsapp"
         onClick={() =>
@@ -133,7 +134,7 @@ export default function AllContacts() {
         }
       >
         Download Results
-      </Button>
+      </Button> */}
     </>
   );
 }

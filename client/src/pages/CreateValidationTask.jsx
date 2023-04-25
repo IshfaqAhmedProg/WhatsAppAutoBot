@@ -3,6 +3,7 @@ import {
   Button,
   Card,
   CardBody,
+  Checkbox,
   Divider,
   FormControl,
   FormLabel,
@@ -11,9 +12,10 @@ import {
   Select,
   Stack,
   Text,
+  Tooltip,
   useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiDownload } from "react-icons/bi";
 import { TbTrashXFilled } from "react-icons/tb";
 import { Link } from "react-router-dom";
@@ -25,8 +27,9 @@ import { create_UUID } from "../Functions/createUUID";
 import ContactCard from "../components/ContactCard";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { useClient } from "../contexts/ClientContext";
+import PageTitle from "../components/PageTitle";
 
-export default function CreateVCard() {
+export default function CreateValidationTask() {
   const { socket } = useClient();
   const [file, setFile] = useState();
   const [manualInput, setManualInput] = useState({
@@ -40,6 +43,7 @@ export default function CreateVCard() {
   });
   const [vCardOutput, setVCardOutput] = useState({
     ready: false,
+    mainString: "",
     downloadUrl: "",
   });
   const requiredFields = ["Numbers", "Name"];
@@ -49,6 +53,7 @@ export default function CreateVCard() {
     unformattedData: [],
     manualInputData: [],
     allColumnHeaders: [],
+    keepInputFile: false,
   });
   function handleFileConfirm() {
     const MAX_FILE_SIZE = 25 * 1024;
@@ -86,8 +91,7 @@ export default function CreateVCard() {
         .catch((err) => {
           toast({
             title: "Error",
-            description:
-              "If new client is detected, QR will be generated or else you'll be logged in.",
+            description: "Error while processing file",
             status: "error",
             duration: 5000,
             isClosable: false,
@@ -104,49 +108,51 @@ export default function CreateVCard() {
       });
     }
   }
-  function handleCreateVCard(e) {
-    e.preventDefault();
 
+  function handleCreateTaskFile(e) {
+    e.preventDefault();
+    setLoading(true);
     var mainString = "";
     const taskObject = { id: create_UUID(), data: [] };
 
     formData.unformattedData.forEach((contact) => {
       if (contact[selectedHeaders.Numbers]) {
-        console.log(
-          "contact[selectedHeaders.Numbers]",
-          contact[selectedHeaders.Numbers]
-        );
         const name = contact[selectedHeaders.Name];
         const num = parsePhoneNumber(contact[selectedHeaders.Numbers]);
         const number = num.format("E.164").replace("+", "");
-        console.log("number", number);
+        // console.log("number", number);
         if (isValidPhoneNumber("+" + number)) {
           var vCard = vCardsJS();
           vCard.firstName = name;
           vCard.workPhone = number;
           mainString = mainString + vCard.getFormattedString();
-          taskObject.data.push({
-            name: name,
-            number: number,
-          });
+          const dataToPush = {
+            queryName: name,
+            queryNumber: number,
+            unformattedNumber: contact[selectedHeaders.Numbers],
+          };
+
+          taskObject.data.push(dataToPush);
           // console.log("mainString", mainString);
         }
       }
     });
-    socket.emit("create_task", taskObject);
+    console.log("formData.unformattedData", formData.unformattedData);
+    socket.emit(
+      "create_task",
+      {
+        ...taskObject,
+        file: formData.unformattedData,
+      },
+      (status) => {
+        fileUploadedToast(status);
+      }
+    );
+    setVCardOutput({ ...vCardOutput, mainString });
     // console.log("mainString final", mainString);
-    var vCardBlob = new Blob([mainString], { type: "text/vcard" });
-    var vCardURL = window.URL.createObjectURL(vCardBlob);
-    setVCardOutput({ ready: true, downloadUrl: vCardURL });
-    toast({
-      title: "Task Created!",
-      description: `Upload the .vcf to your whatsapp device and then check Validate Numbers to see the results.`,
-      status: "success",
-      duration: 5000,
-      isClosable: false,
-    });
   }
-  function handleCreateVCardManual() {
+
+  function handleCreateTaskManual() {
     var mainString = "";
     const taskObject = { id: create_UUID(), data: [] };
 
@@ -155,31 +161,33 @@ export default function CreateVCard() {
       vCard.firstName = contact.name;
       vCard.workPhone = contact.number;
       mainString = mainString + vCard.getFormattedString();
-      taskObject.data.push({
-        name: contact.name,
-        number: contact.number,
-      });
+      const dataToPush = {
+        queryName: contact.name,
+        queryNumber: contact.number,
+      };
+      taskObject.data.push(dataToPush);
       console.log("mainString", mainString);
     });
 
-    socket.emit("create_task", taskObject);
-
-    console.log("mainString final", mainString);
-    var vCardBlob = new Blob([mainString], { type: "text/vcard" });
-    var vCardURL = window.URL.createObjectURL(vCardBlob);
-    setVCardOutput({ ready: true, downloadUrl: vCardURL });
-
-    toast({
-      title: "Task Created!",
-      description: `Upload the .vcf to your whatsapp device and then check Validate Numbers to see the results.`,
-      status: "success",
-      duration: 5000,
-      isClosable: false,
+    socket.emit("create_task", taskObject, (status) => {
+      fileUploadedToast(status);
     });
+    setVCardOutput({ ...vCardOutput, mainString });
+  }
+  function fileUploadedToast(status) {
+    console.log(status);
+    if (!toast.isActive("fileUploaded"))
+      toast({
+        id: "fileUploaded",
+        title: "File Uploaded!",
+        status: status.fileUploaded,
+        duration: 5000,
+        isClosable: false,
+      });
   }
   function validateManualInput() {
     const numberValid = isValidPhoneNumber("+" + manualInput.number);
-    console.log(numberValid);
+    // console.log(numberValid);
     if (numberValid) {
       setFormData({
         ...formData,
@@ -196,13 +204,42 @@ export default function CreateVCard() {
       });
     }
   }
+  //when task gets created succesfully
+  useEffect(() => {
+    socket.on("task_created", () => {
+      var vCardBlob = new Blob([vCardOutput.mainString], {
+        type: "text/vcard",
+      });
+      var vCardURL = window.URL.createObjectURL(vCardBlob);
+      setVCardOutput({ ...vCardOutput, ready: true, downloadUrl: vCardURL });
+      if (!toast.isActive("taskCreated"))
+        toast({
+          id: "taskCreated",
+          title: "Task Created!",
+          description: `Upload the .vcf to your whatsapp device and then check Validate Numbers to see the results.`,
+          status: "success",
+          duration: 5000,
+          isClosable: false,
+        });
+      setLoading(false);
+    });
+  }, [socket]);
+  useEffect(() => {
+    if (selectedHeaders.Numbers) {
+      console.log("unformatted data");
+      setFormData((prev) => ({
+        ...prev,
+        unformattedData: prev.unformattedData.map((row) => {
+          return { ...row, unformattedNumber: row[selectedHeaders.Numbers] };
+        }),
+      }));
+    }
+  }, [selectedHeaders.Numbers]);
   return (
     <>
-      <Heading color="gray.700">
-        Create vCard file {"("}.vcf{")"}
-      </Heading>
+      <PageTitle>Create Validation Task</PageTitle>
       {!vCardOutput.ready ? ( //if vcardoutput is not ready
-        <form onSubmit={handleCreateVCard} style={{ height: "80%" }}>
+        <form onSubmit={handleCreateTaskFile}>
           {!formData.fileName ? ( //if filename not found then show initial form with both manual and file input
             <Box
               display="flex"
@@ -214,17 +251,15 @@ export default function CreateVCard() {
               {!file ? ( //if file not found in file input show upload button
                 <>
                   <Stack color="whatsapp.700" position="relative">
-                    <Text fontWeight="bold" color="whatsapp.500">
-                      Input manually
-                    </Text>
                     {formData.manualInputData.length != 0 && ( //if contacts are manually input then show clear and confirm button
                       <Stack
                         direction="row"
                         position="absolute"
-                        top="-8%"
+                        top="-5%"
                         right="2%"
                       >
                         <Button
+                          size="sm"
                           type="button"
                           onClick={() => {
                             setFormData({ ...formData, manualInputData: [] });
@@ -233,13 +268,16 @@ export default function CreateVCard() {
                           colorScheme="blackAlpha"
                           color="whiteAlpha.600"
                           _hover={{ borderColor: "red.500", color: "red.500" }}
+                          isLoading={loading}
                         >
                           Clear
                         </Button>
                         <Button
+                          size="sm"
                           colorScheme="whatsapp"
                           type="button"
-                          onClick={handleCreateVCardManual}
+                          onClick={handleCreateTaskManual}
+                          isLoading={loading}
                         >
                           Confirm
                         </Button>
@@ -257,8 +295,10 @@ export default function CreateVCard() {
                         return (
                           <ContactCard
                             key={data.number}
-                            name={data.name}
-                            number={data.number}
+                            contact={{
+                              contactNumber: data.number,
+                              contactName: data.name,
+                            }}
                           />
                         );
                       })}
@@ -303,6 +343,7 @@ export default function CreateVCard() {
                         color="whatsapp.500"
                         type="button"
                         onClick={validateManualInput}
+                        isLoading={loading}
                       >
                         Add
                       </Button>
@@ -312,7 +353,7 @@ export default function CreateVCard() {
                     <>
                       <Divider borderColor="whatsapp.800" />
                       <Text
-                        maxW="sm"
+                        maxW="md"
                         color="whatsapp.500"
                         textAlign="center"
                         fontSize="sm"
@@ -321,7 +362,17 @@ export default function CreateVCard() {
                         Make sure to have <strong>atleast two columns</strong>,
                         one containing the <strong>numbers</strong> and the
                         other containing some form of{" "}
-                        <strong>identifier</strong> like email, name etc.
+                        <strong>identifier</strong> like email, name etc. Also
+                        change any header that matches these
+                        <Tooltip
+                          hasArrow
+                          maxWidth="22ch"
+                          placement="top-end"
+                          fontWeight="bold"
+                          label={`"unformattedNumber",\n"contactId",\n"contactChatId",\n"contactName",\n"contactPushName",\n"contactNumber",\n"contactVerifiedName",\n"contactVerifiedLevel",\n"contactIsWAContact",\n"contactLabels",\n"contactType",\n"contactProfilePicUrl",\n"queryName",\n"queryNumber"`}
+                        >
+                          <strong> keywords</strong>
+                        </Tooltip>
                       </Text>
                       <FormLabel
                         htmlFor="fileinput"
@@ -429,14 +480,27 @@ export default function CreateVCard() {
                   </FormControl>
                 );
               })}
-
+              <FormControl>
+                <Checkbox
+                  color="whatsapp.500"
+                  colorScheme="whatsapp"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      keepInputFile: e.target.checked,
+                    })
+                  }
+                >
+                  Include input file <strong>{file.name}</strong>?
+                </Checkbox>
+              </FormControl>
               <Button
                 type="submit"
                 colorScheme="whatsapp"
                 width="120px"
                 marginTop="3rem"
               >
-                Create vCard
+                Create Task
               </Button>
             </Box>
           )}

@@ -1,5 +1,7 @@
 const { WhatsAppContact } = require("../classes/WhatsAppContact")
-
+const fs = require('fs')
+const { joinData } = require("../utils/joinData")
+const { listDir } = require("../utils/listDir")
 exports.getTasks = function (socket, db, activeClientData) {
     socket.on('get_tasks', async (data) => {
         try {
@@ -11,14 +13,28 @@ exports.getTasks = function (socket, db, activeClientData) {
     })
 }
 exports.createTask = function (socket, db, activeClientData) {
-    socket.on('create_task', async (task) => {
-        var dateOptions = {};
-        dateOptions.year = dateOptions.month = dateOptions.day = dateOptions.hour = dateOptions.minute = dateOptions.second = 'numeric'
-        await db.push(`/clientsData/${activeClientData.id}/tasks/${task.id}`, {
-            createdAt: new Date().toLocaleString('sv-SE', dateOptions),
-            length: task.data.length
-        }, true)
-        await db.push(`/clientsData/${activeClientData.id}/tasksData/${task.id}`, task.data, true)
+    socket.on('create_task', async (task, callback) => {
+        //upload if file exists in task
+        try {
+            if (task.file) {
+                const dir = `./filePool/tasks/${activeClientData.id}/`
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir, { recursive: true });
+                }
+                fs.writeFile(`${dir}/${task.id}.json`, JSON.stringify(task.file), (err) => {
+                    callback({ fileUploaded: err ? "error" : "success" });
+                });
+            }
+            var dateOptions = {};
+            dateOptions.year = dateOptions.month = dateOptions.day = dateOptions.hour = dateOptions.minute = dateOptions.second = 'numeric'
+            await db.push(`/clientsData/${activeClientData.id}/tasks/${task.id}`, {
+                createdAt: new Date().toLocaleString('sv-SE', dateOptions),
+                length: task.data.length
+            }, true)
+            await db.push(`/clientsData/${activeClientData.id}/tasksData/${task.id}`, task.data, true)
+            socket.emit('task_created')
+        } catch (error) {
+        }
     })
 }
 exports.getTaskData = function (socket, db, activeClientData) {
@@ -35,28 +51,44 @@ exports.getTaskResults = function (socket, db, activeClientData) {
     socket.on('get_task_results', async (taskId) => {
         const taskData = await db.getData(`/clientsData/${activeClientData.id}/tasksData/${taskId}`)
         const dbContactData = await db.getData(`/clientsData/${activeClientData.id}/contacts/contactsInDevice`)//get data from db
+        const dir = `./filePool/tasks/${activeClientData.id}/`
+        const tasksInFilePool = await listDir(dir)
         const match = []
         const noMatch = []
         taskData.filter(taskelement => dbContactData.some((contact) =>
-            taskelement.number === contact.contactNumber && match.push({
+            taskelement.queryNumber === contact.contactNumber && match.push({
                 ...contact,
-                queryName: taskelement.name || "",
-                queryNumber: taskelement.number || "",
+                queryName: taskelement.queryName || "",
+                queryNumber: taskelement.queryNumber || "",
+                unformattedNumber: taskelement.unformattedNumber || "",
+
             })));
-        // console.log(match)
-        taskData.filter(o1 => !match.some(o2 => o1.number === o2.queryNumber) && noMatch.push({
+        taskData.filter(o1 => !match.some(o2 => o1.queryNumber === o2.queryNumber) && noMatch.push({
             ...new WhatsAppContact(),
-            queryName: o1.name || "",
-            queryNumber: o1.number || "",
+            queryName: o1.queryName || "",
+            queryNumber: o1.queryNumber || "",
+            unformattedNumber: o1.unformattedNumber || "",
+
         }))
 
-        const result = [...match, ...noMatch]
-        console.log("getting task results for ", taskId)
-        console.log("resultSize", result.length)
-        result.length < 10 && console.log("result", result)
+        var result = [...match, ...noMatch]
+        // console.log('result length before join', result.length)
+        // console.log('keys in result before join', Object.keys(result[0]))
+        //join with input file
+
+        if (tasksInFilePool.includes(`${taskId}.json`)) {
+            console.log("joining data")
+            const rawJson = fs.readFileSync(`${dir}/${taskId}.json`)
+            const jsonDataInFilePool = JSON.parse(rawJson)
+            result = await joinData(result, jsonDataInFilePool, 'unformattedNumber')
+        }
+        // console.log('keys in result after join', Object.keys(result[0]))
+        console.log("Created task results for ", taskId)
+        // console.log("resultSize after join", result.length)
         socket.emit('task_results', result);
     })
 }
+
 exports.deleteTask = function (socket, db, activeClientData) {
     socket.on('delete_task', async (taskId) => {
         console.log('deleted task:', taskId)

@@ -1,5 +1,6 @@
 .wwebjs_auth
 node_modules
 dataPool.json
+filepool
 chromium
 launchServer.exe

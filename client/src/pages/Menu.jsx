@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "../index.css";
 import { FaExchangeAlt } from "react-icons/fa";
 import { useClient } from "../contexts/ClientContext";
+import PageTitle from "../components/PageTitle";
 
 export default function Menu() {
   const { socket } = useClient();
@@ -21,8 +22,8 @@ export default function Menu() {
   }, []);
   const menuItems = [
     {
-      link: "/createVCard",
-      display: "Create vCard file (.vcf)",
+      link: "/createValidationTask",
+      display: "Create Validation Task",
       description:
         "Create a vCard file and import the file onto your client devices contacts.",
     },
@@ -64,7 +65,7 @@ export default function Menu() {
           filter="saturate(0%)"
         />
       </Link>
-      <Heading color="gray.700">Menu</Heading>
+      <PageTitle>Menu</PageTitle>
       <Box
         position="absolute"
         top="8%"
@@ -94,7 +95,7 @@ export default function Menu() {
       </Box>
       <Box
         w="70%"
-        maxW="md"
+        maxW="sm"
         minW="xs"
         borderRadius="md"
         bg="blackAlpha.300"

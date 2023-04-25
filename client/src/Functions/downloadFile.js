@@ -1,7 +1,8 @@
 import * as ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
+import { getObjectWithMostKeys } from './getObjectWithMostKeys';
 export function downloadFile(aooData, filename) {
-  const headers = Object.keys(aooData[0]);
+  const headers = getObjectWithMostKeys(aooData);
   const aoaData = [[]];
   aooData.map((obj) => {
     aoaData.push(Object.values(obj));
@@ -12,7 +13,7 @@ export function downloadFile(aooData, filename) {
 async function downloadFormatted(headerArray, data, filename) {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Sheet1");
-
+  console.log("headerArray", headerArray)
   // Add headers
   worksheet.addRow(headerArray);
   const headerRow = worksheet.getRow(1);

@@ -58,7 +58,7 @@ export default function ContactCard({
                 {contact.contactPushName}
               </Text>
             </Stack>
-            {contact.contactIsWAContact != "" && (
+            {contact.contactIsWAContact && (
               <Tag
                 position="absolute"
                 top="15%"

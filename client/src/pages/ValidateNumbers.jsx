@@ -23,6 +23,7 @@ import { MdContactPhone, MdTask } from "react-icons/md";
 import vCardsJS from "vcards-js";
 import { Link, useNavigate } from "react-router-dom";
 import { useClient } from "../contexts/ClientContext";
+import PageTitle from "../components/PageTitle";
 
 export default function ValidateNumbers() {
   const { socket } = useClient();
@@ -130,7 +131,7 @@ export default function ValidateNumbers() {
         command={commandToExecute.command}
         message={commandToExecute.message}
       />
-      <Heading color="gray.700">Validate Numbers</Heading>
+      <PageTitle>Validate Numbers</PageTitle>
       <Stack>
         <Text fontWeight="bold" color="whatsapp.500">
           All Tasks
