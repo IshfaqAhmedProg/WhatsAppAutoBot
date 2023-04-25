@@ -85,7 +85,7 @@ export default function App() {
         {serverConnection && (
           <Box lineHeight="1">
             <Text textAlign="right" fontSize="sm">
-              Server Version:
+              Current server version:
             </Text>
             <Text
               textAlign="right"
