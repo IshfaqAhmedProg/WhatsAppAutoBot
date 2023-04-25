@@ -97,7 +97,7 @@ export default function App() {
         display="flex"
         flexDirection="column"
         alignItems="center"
-        justifyContent="space-between"
+        justifyContent="space-around"
         bg="gray.900"
         position="relative"
       >

@@ -112,168 +112,181 @@ export default function Home() {
     });
   }, [socket]);
   return (
-    <Box
-      paddingBlock="3"
-      display="flex"
-      flexDirection="column"
-      gap="1rem"
-      color="white"
-      alignItems="center"
-      position="relative"
-      width="100%"
-    >
-      <Link to="https://github.com/IshfaqAhmedProg" target="_blank">
-        <Image
-          src="/WhatsappBotLogo.png"
-          alt="Logo"
-          boxSize="200px"
-          objectFit="cover"
-        />
-      </Link>
-      {!qr ? (
-        <>
-          <Link
-            to="https://github.com/IshfaqAhmedProg/WhatsAppAutoBot-Dist/zipball/master"
-            target="_blank"
-          >
-            <ButtonGroup isAttached>
-              <Button
-                size="xs"
-                colorScheme="blackAlpha"
-                leftIcon={<FaServer />}
-                color="whatsapp.500"
-              >
-                Get the latest server files
-              </Button>
-              <Button
-                size="xs"
-                colorScheme="blackAlpha"
-                color="whatsapp.300"
-                border="none"
-              >
-                v{packageJson.version}
-              </Button>
-            </ButtonGroup>
-          </Link>
-          <form
-            onSubmit={handleNewClientForm}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1em",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            <Stack direction="row" alignItems="flex-end">
-              <FormControl>
-                {/* <FormLabel color="whatsapp.300">Enter client name</FormLabel> */}
-                <Input
-                  isRequired={true}
-                  maxWidth="xs"
-                  bg="gray.700"
-                  borderColor="whatsapp.800"
-                  placeholder="Enter client name here"
-                  type="text"
-                  onChange={(e) => {
-                    setServerData({
-                      ...clientData,
-                      id: create_UUID(),
-                      name: e.target.value,
-                    });
-                  }}
-                  value={clientData.name}
-                />
-              </FormControl>
-              <Button type="submit" isLoading={loading} colorScheme="whatsapp">
-                Submit
-              </Button>
-            </Stack>
-            <Box
-              display="flex"
-              flexDirection="column"
-              gap="2"
-              alignItems="center"
-              borderWidth="1px"
-              borderRadius="md"
-              borderColor="whatsapp.800"
-              width="80%"
-              maxW="container.md"
-              height="xs"
-              overflowY="auto"
-              maxHeight="xs"
-              padding="2"
+    <>
+      <Box
+        position="absolute"
+        left="50%"
+        top="10%"
+        transform="translate(-50%,-10%)"
+      >
+        <Link to="https://github.com/IshfaqAhmedProg" target="_blank">
+          <Image
+            src="/WhatsappBotLogo.png"
+            alt="Logo"
+            boxSize="200px"
+            objectFit="cover"
+          />
+        </Link>
+      </Box>
+      <Box
+        marginTop="20%"
+        display="flex"
+        flexDirection="column"
+        gap="1rem"
+        color="white"
+        alignItems="center"
+        position="relative"
+        width="100%"
+      >
+        {!qr ? (
+          <>
+            <Link
+              to="https://github.com/IshfaqAhmedProg/WhatsAppAutoBot-Dist/zipball/master"
+              target="_blank"
             >
-              {!allClient || allClient.length == 0 ? (
-                <Text color="darkgray" fontWeight="bold">
-                  No Clients found!
-                </Text>
-              ) : (
-                allClient.map((client) => {
-                  return (
-                    <Card key={client.id} width="full" bg="blackAlpha.600">
-                      <CardBody
-                        display="flex"
-                        justifyContent="space-between"
-                        size="lg"
-                        minHeight="3rem"
-                        flexWrap="wrap"
-                      >
-                        <Box>
-                          <Text
-                            fontSize="md"
-                            fontWeight="bold"
-                            color="whiteAlpha.500"
-                          >
-                            {client.name}
-                          </Text>
-                          <Text fontWeight="light">#{client.id}</Text>
-                        </Box>
-                        <Stack direction="row">
-                          <Tooltip label="Login to session">
-                            <IconButton
-                              icon={<FiLogIn />}
-                              colorScheme="blackAlpha"
-                              color="whiteAlpha.600"
-                              _hover={{
-                                borderColor: "whatsapp.500",
-                                color: "whatsapp.500",
-                              }}
-                              type="submit"
-                              onClick={() => {
-                                setServerData({
-                                  ...clientData,
-                                  id: client.id,
-                                  name: client.name,
-                                });
-                              }}
-                            />
-                          </Tooltip>
-                          <Tooltip label="Delete the client?">
-                            <IconButton
-                              icon={<TbTrashXFilled />}
-                              colorScheme="blackAlpha"
-                              color="whiteAlpha.600"
-                              _hover={{
-                                borderColor: "red.500",
-                                color: "red.500",
-                              }}
-                              onClick={() => deleteClient(client.id)}
-                              type="button"
-                            />
-                          </Tooltip>
-                        </Stack>
-                      </CardBody>
-                    </Card>
-                  );
-                })
-              )}
-            </Box>
-          </form>
-        </>
-      ) : (
-        <WhatsAppQRCode qr={qr} />
-      )}
-    </Box>
+              <ButtonGroup isAttached>
+                <Button
+                  size="xs"
+                  colorScheme="blackAlpha"
+                  leftIcon={<FaServer />}
+                  color="whatsapp.500"
+                >
+                  Get the latest server files
+                </Button>
+                <Button
+                  size="xs"
+                  colorScheme="blackAlpha"
+                  color="whatsapp.300"
+                  border="none"
+                >
+                  v{packageJson.version}
+                </Button>
+              </ButtonGroup>
+            </Link>
+            <form
+              onSubmit={handleNewClientForm}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1em",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Stack direction="row" alignItems="flex-end">
+                <FormControl>
+                  {/* <FormLabel color="whatsapp.300">Enter client name</FormLabel> */}
+                  <Input
+                    isRequired={true}
+                    maxWidth="xs"
+                    bg="gray.700"
+                    borderColor="whatsapp.800"
+                    placeholder="Enter client name here"
+                    type="text"
+                    onChange={(e) => {
+                      setServerData({
+                        ...clientData,
+                        id: create_UUID(),
+                        name: e.target.value,
+                      });
+                    }}
+                    value={clientData.name}
+                  />
+                </FormControl>
+                <Button
+                  type="submit"
+                  isLoading={loading}
+                  colorScheme="whatsapp"
+                >
+                  Submit
+                </Button>
+              </Stack>
+              <Box
+                display="flex"
+                flexDirection="column"
+                gap="2"
+                alignItems="center"
+                borderWidth="1px"
+                borderRadius="md"
+                borderColor="whatsapp.800"
+                width="80%"
+                maxW="container.md"
+                height="xs"
+                overflowY="auto"
+                maxHeight="xs"
+                padding="2"
+              >
+                {!allClient || allClient.length == 0 ? (
+                  <Text color="darkgray" fontWeight="bold">
+                    No Clients found!
+                  </Text>
+                ) : (
+                  allClient.map((client) => {
+                    return (
+                      <Card key={client.id} width="full" bg="blackAlpha.600">
+                        <CardBody
+                          display="flex"
+                          justifyContent="space-between"
+                          size="lg"
+                          minHeight="3rem"
+                          flexWrap="wrap"
+                        >
+                          <Box>
+                            <Text
+                              fontSize="md"
+                              fontWeight="bold"
+                              color="whiteAlpha.500"
+                            >
+                              {client.name}
+                            </Text>
+                            <Text fontWeight="light">#{client.id}</Text>
+                          </Box>
+                          <Stack direction="row">
+                            <Tooltip label="Login to session">
+                              <IconButton
+                                icon={<FiLogIn />}
+                                colorScheme="blackAlpha"
+                                color="whiteAlpha.600"
+                                _hover={{
+                                  borderColor: "whatsapp.500",
+                                  color: "whatsapp.500",
+                                }}
+                                type="submit"
+                                onClick={() => {
+                                  setServerData({
+                                    ...clientData,
+                                    id: client.id,
+                                    name: client.name,
+                                  });
+                                }}
+                              />
+                            </Tooltip>
+                            <Tooltip label="Delete the client?">
+                              <IconButton
+                                icon={<TbTrashXFilled />}
+                                colorScheme="blackAlpha"
+                                color="whiteAlpha.600"
+                                _hover={{
+                                  borderColor: "red.500",
+                                  color: "red.500",
+                                }}
+                                onClick={() => deleteClient(client.id)}
+                                type="button"
+                              />
+                            </Tooltip>
+                          </Stack>
+                        </CardBody>
+                      </Card>
+                    );
+                  })
+                )}
+              </Box>
+            </form>
+          </>
+        ) : (
+          <WhatsAppQRCode qr={qr} />
+        )}
+      </Box>
+    </>
   );
 }
