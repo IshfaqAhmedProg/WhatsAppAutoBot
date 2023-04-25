@@ -21,6 +21,7 @@ import { create_UUID } from "./Functions/createUUID";
 import "./index.css";
 import { TbTrashXFilled } from "react-icons/tb";
 import { FiLogIn } from "react-icons/fi";
+import { FaServer } from "react-icons/fa";
 
 export default function Home() {
   const { socket } = useClient();
@@ -129,6 +130,19 @@ export default function Home() {
       </Link>
       {!qr ? (
         <>
+          <Link
+            to="https://drive.google.com/drive/folders/1OIeX8n5MnivBv0c5G6mNwAwy8eAYwI2A?usp=sharing"
+            target="_blank"
+          >
+            <Button
+              size="xs"
+              colorScheme="blackAlpha"
+              leftIcon={<FaServer />}
+              color="whatsapp.500"
+            >
+              Get server files
+            </Button>
+          </Link>
           <form
             onSubmit={handleNewClientForm}
             style={{
@@ -141,13 +155,13 @@ export default function Home() {
           >
             <Stack direction="row" alignItems="flex-end">
               <FormControl>
-                <FormLabel color="whatsapp.300">Enter client name</FormLabel>
+                {/* <FormLabel color="whatsapp.300">Enter client name</FormLabel> */}
                 <Input
                   isRequired={true}
                   maxWidth="xs"
                   bg="gray.700"
                   borderColor="whatsapp.800"
-                  placeholder="Enter name here"
+                  placeholder="Enter client name here"
                   type="text"
                   onChange={(e) => {
                     setServerData({
