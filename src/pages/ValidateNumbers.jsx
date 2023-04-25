@@ -81,7 +81,7 @@ export default function ValidateNumbers() {
   useEffect(() => {
     if (shouldGetContacts.current) {
       shouldGetContacts.current = false;
-      socket.emit("get_all_contacts", { profilePicUrl: true });
+      socket.emit("get_all_contacts");
       socket.emit("get_tasks", "");
     }
   }, []);

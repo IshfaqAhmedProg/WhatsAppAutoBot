@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import "./index.css";
 import Home from "./Home";
 import Menu from "./pages/Menu";
-import { Box, Image, Text, useToast } from "@chakra-ui/react";
+import { Box, Image, Stack, Text, useToast } from "@chakra-ui/react";
 import CreateVCard from "./pages/CreateVCard";
 import FeaturesLayout from "./components/FeaturesLayout";
 import SendBulkMessages from "./pages/SendBulkMessages";
@@ -13,12 +13,33 @@ import ValidateNumbers from "./pages/ValidateNumbers";
 import ValidationResult from "./pages/ValidationResult";
 import SelectContacts from "./components/SelectContacts";
 import { useClient } from "./contexts/ClientContext";
-
+import packageJSON from "../package.json";
+import ComposeMessage from "./pages/ComposeMessage";
 export default function App() {
-  const { socket } = useClient();
+  const { socket, removeClient } = useClient();
   const navigate = useNavigate();
   const toast = useToast();
+  const shouldSetVersion = useRef(true);
   const [serverConnection, setServerConnection] = useState(false);
+  const [serverVersion, setServerVersion] = useState("0.0.0");
+  useEffect(() => {
+    socket.on("server_version", (version) => {
+      if (shouldSetVersion.current) {
+        console.log("version", version);
+        setServerVersion(version);
+        if (version != packageJSON.version) {
+          toast({
+            title: "Outdated Server",
+            description: `Update to the latest server by downloading the server files from the link below.`,
+            status: "error",
+            duration: 99999,
+            isClosable: false,
+          });
+        }
+        shouldSetVersion.current = false;
+      }
+    });
+  }, [socket]);
   socket.on("connect", () => {
     setServerConnection(true);
   });
@@ -26,43 +47,59 @@ export default function App() {
     setServerConnection(true);
   });
   socket.on("disconnected", () => {
-    setServerConnection(false);
-    navigate("/");
+    handleDisconnect();
   });
   socket.on("disconnect", () => {
-    toast({
-      title: "Server Error",
-      description: `You've been disconnected from the server.`,
-      status: "error",
-      duration: 5000,
-      isClosable: false,
-    });
+    handleDisconnect();
+  });
+  function handleDisconnect() {
+    if (!toast.isActive("disconnectFromServer")) {
+      toast({
+        id: "disconnectFromServer",
+        title: "Server Error",
+        description: `You've been disconnected from the server.`,
+        status: "error",
+        duration: 5000,
+        isClosable: false,
+      });
+    }
+    removeClient();
     setServerConnection(false);
     navigate("/");
-  });
+  }
   return (
     <>
-      <Box
-        position="absolute"
-        top="5%"
-        right="5%"
-        color="whiteAlpha.300"
-        fontSize="sm"
-        display="flex"
-        alignItems="center"
-        gap="2"
-      >
-        <Text>
-          {serverConnection ? "Connected to Server" : "Server Disconnected"}
-        </Text>
-        <TbCircleDotFilled
-          style={{
-            color: serverConnection
-              ? "var(--chakra-colors-whatsapp-500)"
-              : "var(--chakra-colors-red-500)",
-          }}
-        />
-      </Box>
+      <Stack position="absolute" top="5%" right="5%" color="whiteAlpha.300">
+        <Box fontSize="sm" display="flex" alignItems="center" gap="2">
+          <Text>
+            {serverConnection ? "Connected to Server" : "Server Disconnected"}
+          </Text>
+          <TbCircleDotFilled
+            style={{
+              color: serverConnection
+                ? "var(--chakra-colors-whatsapp-500)"
+                : "var(--chakra-colors-red-500)",
+            }}
+          />
+        </Box>
+        {serverConnection && (
+          <Box lineHeight="1">
+            <Text textAlign="right" fontSize="sm">
+              Server Version:
+            </Text>
+            <Text
+              textAlign="right"
+              fontWeight="bold"
+              color={
+                serverVersion < packageJSON.version ? "red.500" : "whatsapp.500"
+              }
+            >
+              v{serverVersion}
+            </Text>
+          </Box>
+        )}
+      </Stack>
+
       <Box
         borderRadius="lg"
         overflow="hidden"
@@ -91,7 +128,7 @@ export default function App() {
 
             <Route path="/allContacts" element={<AllContacts />} />
             <Route path="/sendBulkMessages">
-              <Route index element={<SendBulkMessages />} />
+              <Route index element={<ComposeMessage />} />
               <Route path=":sendType" element={<SelectContacts />} />
             </Route>
           </Route>

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   FormControl,
@@ -22,6 +23,7 @@ import "./index.css";
 import { TbTrashXFilled } from "react-icons/tb";
 import { FiLogIn } from "react-icons/fi";
 import { FaServer } from "react-icons/fa";
+import packageJson from "../package.json";
 
 export default function Home() {
   const { socket } = useClient();
@@ -77,12 +79,15 @@ export default function Home() {
   useEffect(() => {
     socket.on("client_ready", (data) => {
       if (!clientReady.current) {
-        toast({
-          title: data.message,
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
+        if (!toast.isActive("clientready")) {
+          toast({
+            id: "clientready",
+            title: data.message,
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          });
+        }
         registerClient(data.id, data.name);
         navigate("/menu");
         clientReady.current = true;
@@ -131,14 +136,24 @@ export default function Home() {
             to="https://github.com/IshfaqAhmedProg/WhatsappAutoBot-Server/zipball/master"
             target="_blank"
           >
-            <Button
-              size="xs"
-              colorScheme="blackAlpha"
-              leftIcon={<FaServer />}
-              color="whatsapp.500"
-            >
-              Get server files
-            </Button>
+            <ButtonGroup isAttached>
+              <Button
+                size="xs"
+                colorScheme="blackAlpha"
+                leftIcon={<FaServer />}
+                color="whatsapp.500"
+              >
+                Get the latest server files
+              </Button>
+              <Button
+                size="xs"
+                colorScheme="blackAlpha"
+                color="whatsapp.300"
+                border="none"
+              >
+                v{packageJson.version}
+              </Button>
+            </ButtonGroup>
           </Link>
           <form
             onSubmit={handleNewClientForm}

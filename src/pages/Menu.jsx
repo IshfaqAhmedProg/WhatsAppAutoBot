@@ -16,7 +16,7 @@ export default function Menu() {
   useEffect(() => {
     if (shouldGetContacts.current) {
       shouldGetContacts.current = false;
-      socket.emit("get_all_contacts", { profilePicUrl: true });
+      socket.emit("get_all_contacts");
     }
   }, []);
   const menuItems = [

@@ -103,7 +103,7 @@ export default function SendBulkMessages() {
   }, [socket]);
   useEffect(() => {
     setLoading(true);
-    socket.emit("get_all_contacts", { profilePicUrl: false });
+    socket.emit("get_all_contacts");
   }, []);
   return (
     <>
