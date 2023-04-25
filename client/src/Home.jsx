@@ -133,7 +133,7 @@ export default function Home() {
       {!qr ? (
         <>
           <Link
-            to="https://github.com/IshfaqAhmedProg/WhatsappAutoBot-Server/zipball/master"
+            to="https://github.com/IshfaqAhmedProg/WhatsAppAutoBot-Dist/zipball/master"
             target="_blank"
           >
             <ButtonGroup isAttached>
