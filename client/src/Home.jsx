@@ -117,10 +117,7 @@ export default function Home() {
       position="relative"
       width="100%"
     >
-      <Link
-        to="https://drive.google.com/drive/folders/1OIeX8n5MnivBv0c5G6mNwAwy8eAYwI2A?usp=sharing"
-        target="_blank"
-      >
+      <Link to="https://github.com/IshfaqAhmedProg" target="_blank">
         <Image
           src="/WhatsappBotLogo.png"
           alt="Logo"
@@ -131,7 +128,7 @@ export default function Home() {
       {!qr ? (
         <>
           <Link
-            to="https://drive.google.com/drive/folders/1OIeX8n5MnivBv0c5G6mNwAwy8eAYwI2A?usp=sharing"
+            to="https://github.com/IshfaqAhmedProg/WhatsappAutoBot-Server/zipball/master"
             target="_blank"
           >
             <Button
