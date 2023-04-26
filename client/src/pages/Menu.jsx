@@ -98,7 +98,7 @@ export default function Menu() {
         maxW="sm"
         minW="xs"
         borderRadius="md"
-        bg="blackAlpha.300"
+        bg="blackAlpha.400"
         display="flex"
         alignItems="center"
         flexDirection="column"

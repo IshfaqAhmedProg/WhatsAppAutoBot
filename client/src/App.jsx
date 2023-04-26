@@ -15,7 +15,7 @@ import { useClient } from "./contexts/ClientContext";
 import packageJSON from "../package.json";
 import ComposeMessage from "./pages/ComposeMessage";
 export default function App() {
-  const { socket, serverConnection, handleDisconnect, handleConnect } =
+  const { socket, serverConnection, handleConnect, handleDisconnect } =
     useClient();
   const toast = useToast();
   const shouldSetVersion = useRef(true);

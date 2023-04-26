@@ -7,9 +7,10 @@ exports.clientConnection = function (socket, wwebjsClient) {
         loggedOut = true;
     })
     socket.on('disconnect', () => {
-        if (loggedOut == false) {
-            console.log('Socket Disconnected')
+        console.log('Socket Disconnected')
+        if (loggedOut == true) {
             wwebjsClient.destroy()
+            console.log('Wwebjs client destroyed!')
         }
     })
 }

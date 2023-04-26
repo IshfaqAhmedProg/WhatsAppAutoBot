@@ -95,7 +95,7 @@ export default function AllContacts() {
         flexDirection="column"
         gap="0.5em"
         padding="2"
-        bg="blackAlpha.300"
+        bg="blackAlpha.400"
       >
         <Text fontWeight="bold" color="gray.700">
           Contacts in your phone

@@ -239,7 +239,7 @@ export default function CreateValidationTask() {
     <>
       <PageTitle>Create Validation Task</PageTitle>
       {!vCardOutput.ready ? ( //if vcardoutput is not ready
-        <form onSubmit={handleCreateTaskFile}>
+        <form onSubmit={handleCreateTaskFile} style={{ height: "100%" }}>
           {!formData.fileName ? ( //if filename not found then show initial form with both manual and file input
             <Box
               display="flex"
@@ -247,10 +247,14 @@ export default function CreateValidationTask() {
               justifyContent="center"
               alignItems="center"
               gap="1.5em"
+              height="100%"
             >
               {!file ? ( //if file not found in file input show upload button
                 <>
-                  <Stack color="whatsapp.700" position="relative">
+                  <Stack color="whatsapp.500" position="relative">
+                    <Text fontWeight="bold" color="whatsapp.500">
+                      Input manually
+                    </Text>
                     {formData.manualInputData.length != 0 && ( //if contacts are manually input then show clear and confirm button
                       <Stack
                         direction="row"
@@ -310,7 +314,7 @@ export default function CreateValidationTask() {
                           placeholder="Name can be anything (email,id etc.)"
                           _placeholder={{ fontSize: "xs" }}
                           type="text"
-                          borderColor="whatsapp.700"
+                          borderColor="gray.700"
                           color="whatsapp.500"
                           value={manualInput.name}
                           onChange={(e) => {
@@ -327,7 +331,7 @@ export default function CreateValidationTask() {
                           placeholder="Enter phone number with country code"
                           _placeholder={{ fontSize: "xs" }}
                           type="text"
-                          borderColor="whatsapp.700"
+                          borderColor="gray.700"
                           color="whatsapp.500"
                           value={manualInput.number}
                           onChange={(e) => {
@@ -351,7 +355,7 @@ export default function CreateValidationTask() {
                   </Stack>
                   {formData.manualInputData.length == 0 && ( //if no manual input then show upload file button
                     <>
-                      <Divider borderColor="whatsapp.800" />
+                      <Divider borderColor="whiteAlpha.300" />
                       <Text
                         maxW="md"
                         color="whatsapp.500"
@@ -440,6 +444,7 @@ export default function CreateValidationTask() {
               flexDirection="column"
               gap="1em"
               alignItems="center"
+              height="100%"
             >
               {Object.keys(selectedHeaders).map((key) => {
                 return (
@@ -491,7 +496,9 @@ export default function CreateValidationTask() {
                     })
                   }
                 >
-                  Include input file <strong>{file.name}</strong>?
+                  <Text fontSize="sm">
+                    Include input file <strong>{file.name}</strong>?
+                  </Text>
                 </Checkbox>
               </FormControl>
               <Button

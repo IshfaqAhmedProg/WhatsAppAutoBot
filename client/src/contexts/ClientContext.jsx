@@ -12,6 +12,7 @@ export const ClientContextProvider = ({ children }) => {
   const [serverConnection, setServerConnection] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
+
   const registerClient = (id, name) => {
     setClientData({ id: id, name: name });
     localStorage.setItem("id", id);
@@ -25,6 +26,9 @@ export const ClientContextProvider = ({ children }) => {
   };
 
   function handleConnect() {
+    // if (!clientData.id) {
+    //   navigate("/");
+    // }
     setServerConnection(true);
   }
   function handleDisconnect() {

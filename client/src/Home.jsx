@@ -158,6 +158,7 @@ export default function Home() {
                   colorScheme="blackAlpha"
                   color="whatsapp.300"
                   border="none"
+                  bg="whiteAlpha.300"
                 >
                   v{packageJson.version}
                 </Button>
@@ -235,11 +236,13 @@ export default function Home() {
                             <Text
                               fontSize="md"
                               fontWeight="bold"
-                              color="whiteAlpha.500"
+                              color="whatsapp.500"
                             >
                               {client.name}
                             </Text>
-                            <Text fontWeight="light">#{client.id}</Text>
+                            <Text fontWeight="light" color="whiteAlpha.600">
+                              #{client.id}
+                            </Text>
                           </Box>
                           <Stack direction="row">
                             <Tooltip label="Login to session">
