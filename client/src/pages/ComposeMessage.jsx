@@ -2,8 +2,7 @@ import { Box, Button, Fade, Slide, SlideFade, Stack } from "@chakra-ui/react";
 import React, { useState } from "react";
 import PageTitle from "../components/PageTitle";
 import { FiPlus } from "react-icons/fi";
-import greetingsJson from "../assets/greetings.json";
-import farewellsJson from "../assets/farewells.json";
+import GreetingsAndFarewells from "../assets/GreetingsAndFarewells.json";
 
 import GreetingCard from "../components/GreetingCard";
 import FarewellCard from "../components/FarewellCard";
@@ -18,6 +17,7 @@ export default function ComposeMessage() {
   };
   const [greetingMessage, setGreetingMessage] = useState(initialMessageState);
   const [farewellMessage, setFarewellMessage] = useState(initialMessageState);
+  const [bodies, setBodies] = useState([]);
   const [addFarewell, setAddFarewell] = useState(false);
   function handleGreetingMessage(message) {
     setGreetingMessage((prev) => ({ ...prev, message: message }));
@@ -37,7 +37,9 @@ export default function ComposeMessage() {
   function toggleFarewell() {
     setAddFarewell((prev) => !prev);
   }
-
+  function handleBodies(curr) {
+    setBodies(curr);
+  }
   return (
     <>
       {console.log("greetingMessage", greetingMessage)}
@@ -58,7 +60,7 @@ export default function ComposeMessage() {
               greetingMessage={greetingMessage}
               handleGreetingAddName={handleGreetingAddName}
               handleGreetingMessage={handleGreetingMessage}
-              greetingsJson={greetingsJson}
+              greetingsJson={GreetingsAndFarewells.greetings}
               toggleGreeting={toggleGreeting}
             />
           </Fade>
@@ -77,7 +79,7 @@ export default function ComposeMessage() {
           </Button>
         )}
         <Box bg="gray.800" height="100%">
-          <MessageBodyCard />
+          <MessageBodyCard bodies={bodies} handleBodies={handleBodies} />
         </Box>
         {addFarewell ? (
           <Fade in={addFarewell} direction="bottom" unmountOnExit>
@@ -85,7 +87,7 @@ export default function ComposeMessage() {
               farewellMessage={farewellMessage}
               handleFarewellAddSenderName={handleFarewellAddSenderName}
               handleFarewellMessage={handleFarewellMessage}
-              farewellsJson={farewellsJson}
+              farewellsArray={GreetingsAndFarewells.farewells}
               toggleFarewell={toggleFarewell}
             />
           </Fade>

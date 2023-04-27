@@ -16,7 +16,7 @@ export default function FarewellCard({
   farewellMessage,
   handleFarewellMessage,
   handleFarewellAddSenderName,
-  farewellsJson,
+  farewellsArray,
   toggleFarewell,
 }) {
   return (
@@ -84,14 +84,14 @@ export default function FarewellCard({
           <option disabled defaultValue value="" hidden>
             Select Farewells
           </option>
-          {farewellsJson.map((Farewell, index) => {
+          {farewellsArray.map((Farewell, index) => {
             return (
               <option key={index} value={Farewell}>
                 {Farewell}
               </option>
             );
           })}
-          <option value={farewellsJson}>Choose Randomly</option>
+          <option value={farewellsArray}>Choose Randomly</option>
         </Select>
       </GridItem>
       <GridItem
