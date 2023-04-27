@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { downloadFile } from "../Functions/downloadFile";
+import { downloadFile } from "../functions/downloadFile";
 import { useClient } from "../contexts/ClientContext";
 
 export default function ValidationResult() {

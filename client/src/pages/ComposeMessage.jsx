@@ -15,7 +15,7 @@ import GreetingsAndFarewells from "../assets/GreetingsAndFarewells.json";
 import GreetingCard from "../components/GreetingCard";
 import FarewellCard from "../components/FarewellCard";
 import MessageBodyCard from "../components/MessageBodyCard";
-import { create_UUID } from "../Functions/createUUID";
+import { create_UUID } from "../functions/createUUID";
 import { useClient } from "../contexts/ClientContext";
 import { useNavigate } from "react-router-dom";
 
