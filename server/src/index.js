@@ -9,11 +9,12 @@ const { JsonDB, Config, DataError } = require('node-json-db');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const isPkg = typeof process.pkg !== 'undefined';
-const { getAllContacts, getContactsFragment } = require('./functions/contactsHandler');
-const { getTasks, createTask, getTaskData, deleteTask, getTaskResults } = require('./functions/tasksHandler');
-const { clientConnection } = require('./functions/clientConnectionHandler');
+const { getAllContacts, getContactsFragment } = require('./handlers/contactsHandler');
+const { getTasks, createTask, getTaskData, deleteTask, getTaskResults } = require('./handlers/tasksHandler');
+const { clientConnection } = require('./handlers/clientConnectionHandler');
+const { deleteClient } = require('./handlers/clientHandler');
+const { saveMessage, saveReceivers } = require('./handlers/messageHandler');
 const packageJson = require('../package.json');
-const { deleteClient } = require('./functions/clientHandler');
 //mac path replace
 let chromiumExecutablePath = (isPkg ?
     puppeteer.executablePath().replace(
@@ -136,6 +137,8 @@ io.on('connection', async (socket) => {
         getTaskData(socket, db, activeClientData)
         getTaskResults(socket, db, activeClientData)
         deleteTask(socket, db, activeClientData)
+        saveMessage(socket, db, activeClientData)
+        saveReceivers(socket, db, activeClientData)
         //handle logouts and disconnect
         clientConnection(socket, wwebjsClient)
     })

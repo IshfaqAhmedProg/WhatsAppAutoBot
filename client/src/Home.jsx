@@ -43,11 +43,11 @@ export default function Home() {
   function handleNewClientForm(e) {
     e.preventDefault();
     setLoading(true);
-    console.log({ id: clientData.id, name: clientData.name });
+    // console.log({ id: clientData.id, name: clientData.name });
     socket.emit("set_client", { id: clientData.id, name: clientData.name });
   }
   function deleteClient(clientId) {
-    console.log(clientId);
+    // console.log(clientId);
     setLoading(true);
     socket.emit("delete_client", { clientId: clientId });
   }
@@ -97,7 +97,7 @@ export default function Home() {
   useEffect(() => {
     socket.on("all_clients", (data) => {
       setAllClient(data);
-      console.log(data);
+      // console.log(data);
     });
   }, [socket]);
   useEffect(() => {
@@ -207,10 +207,9 @@ export default function Home() {
                 flexDirection="column"
                 gap="2"
                 alignItems="center"
-                borderWidth="1px"
                 borderRadius="md"
-                borderColor="whatsapp.800"
                 width="80%"
+                bg="blackAlpha.400"
                 maxW="container.md"
                 height="xs"
                 overflowY="auto"
@@ -224,7 +223,7 @@ export default function Home() {
                 ) : (
                   allClient.map((client) => {
                     return (
-                      <Card key={client.id} width="full" bg="blackAlpha.600">
+                      <Card key={client.id} width="full" bg="gray.800">
                         <CardBody
                           display="flex"
                           justifyContent="space-between"

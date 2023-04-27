@@ -7,13 +7,13 @@ export function downloadFile(aooData, filename) {
   aooData.map((obj) => {
     aoaData.push(Object.values(obj));
   });
-  console.log("aoaData", aoaData);
+  // console.log("aoaData", aoaData);
   downloadFormatted(headers, aoaData, filename);
 }
 async function downloadFormatted(headerArray, data, filename) {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Sheet1");
-  console.log("headerArray", headerArray)
+  // console.log("headerArray", headerArray)
   // Add headers
   worksheet.addRow(headerArray);
   const headerRow = worksheet.getRow(1);
@@ -38,7 +38,7 @@ async function downloadFormatted(headerArray, data, filename) {
         headerArray.indexOf("contactProfilePicUrl") + 1
       );
       const imageUrl = imageCell.value;
-      console.log("imageUrl", imageUrl)
+      // console.log("imageUrl", imageUrl)
       if (imageUrl && typeof imageUrl === "string" && imageUrl.startsWith("http")) {
         await fetch(imageUrl)
           .then(response => response.arrayBuffer())
@@ -47,8 +47,8 @@ async function downloadFormatted(headerArray, data, filename) {
               new Uint8Array(result)
                 .reduce((data, byte) => data + String.fromCharCode(byte), '')
             );
-            console.log("base64Image", base64Image)
-            console.log("imagecell", imageCell.address, imageCell.value)
+            // console.log("base64Image", base64Image)
+            // console.log("imagecell", imageCell.address, imageCell.value)
             const imageId = workbook.addImage({
               base64: base64Image,
               extension: "jpg",

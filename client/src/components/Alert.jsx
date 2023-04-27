@@ -6,9 +6,7 @@ export default function AlertComponent({ message }) {
     onClose,
     onOpen,
   } = useDisclosure({ defaultIsOpen: true });
-  console.log("open", open);
   useEffect(() => {
-    console.log("isVisible", isVisible);
     const closer = setTimeout(() => {
       if (isVisible) {
         onClose();

@@ -39,7 +39,7 @@ export default function ValidateNumbers() {
     confirm: false,
   });
   function deleteTask(taskId) {
-    console.log({ commandToExecute });
+    // console.log({ commandToExecute });
     socket.emit("delete_task", taskId);
     setCommandToExecute({ command: "", message: "", confirm: false });
     socket.emit("get_tasks", "");
@@ -57,9 +57,9 @@ export default function ValidateNumbers() {
         vCard.workPhone = contact.number || "";
         vCard.email = contact.email || "";
         mainString = mainString + vCard.getFormattedString();
-        console.log("mainString", mainString);
+        // console.log("mainString", mainString);
       });
-      console.log("mainString final", mainString);
+      // console.log("mainString final", mainString);
       var vCardBlob = new Blob([mainString], { type: "text/vcard" });
       var vCardURL = window.URL.createObjectURL(vCardBlob);
       setDownloadUrl(vCardURL);

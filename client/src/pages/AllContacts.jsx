@@ -1,25 +1,7 @@
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Divider,
-  Heading,
-  IconButton,
-  Image,
-  Stack,
-  Tag,
-  TagLabel,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Box, IconButton, Text, Tooltip } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { BiUserCircle } from "react-icons/bi";
-import { RxSlash } from "react-icons/rx";
 import ContactCard from "../components/ContactCard";
 import StatsBox from "../components/StatsBox";
-import { downloadFile } from "../Functions/downloadFile";
 import { FiArrowDown } from "react-icons/fi";
 import { useClient } from "../contexts/ClientContext";
 import PageTitle from "../components/PageTitle";
@@ -28,10 +10,7 @@ export default function AllContacts() {
   const itemsPerPage = 20;
   const [loading, setLoading] = useState(false);
   const [allContacts, setAllContacts] = useState([]);
-  const [contactsStat, setContactsStat] = useState({
-    totalContacts: 0,
-    totalWhatsAppContacts: 0,
-  });
+
   const [currentPageStat, setCurrentPageStat] = useState({
     page: 1,
     totalPages: 0,
@@ -55,7 +34,7 @@ export default function AllContacts() {
   }, []);
   useEffect(() => {
     socket.on("set_contacts_fragment", (data) => {
-      console.log("response", data);
+      // console.log("response", data);
       setAllContacts((allContacts) =>
         [
           ...new Set(
@@ -76,7 +55,7 @@ export default function AllContacts() {
   return (
     <>
       <PageTitle>All Contacts</PageTitle>
-      {console.log("allContacts", allContacts)}
+      {/* {console.log("allContacts", allContacts)} */}
       <StatsBox
         count={allContacts.length}
         total={currentPageStat.totalContacts}
@@ -86,8 +65,6 @@ export default function AllContacts() {
       <Box
         width="lg"
         height="md"
-        // borderWidth="1px"
-        // borderColor="whatsapp.800"
         borderRadius="md"
         marginY="3"
         overflowY="auto"
@@ -109,32 +86,11 @@ export default function AllContacts() {
               icon={<FiArrowDown />}
               colorScheme="blackAlpha"
               onClick={getFragment}
+              isLoading={loading}
             />
           </Tooltip>
         )}
-        {/* <Text fontWeight="bold" color="gray.700">
-          Contacts in whatsapp's database
-        </Text>
-        {allContacts.map((contact) => {
-          if (contact.contactName == "unavailable")
-            return <ContactCard key={contact.contactId} contact={contact} />;
-        })} */}
       </Box>
-
-      {/* <Button
-        isLoading={loading}
-        colorScheme="whatsapp"
-        onClick={() =>
-          downloadFile(
-            allContacts,
-            `AllContacts_${new Intl.DateTimeFormat(
-              "en-US"
-            ).format()}_${Math.floor(Math.random() * 420)}.xlsx`
-          )
-        }
-      >
-        Download Results
-      </Button> */}
     </>
   );
 }

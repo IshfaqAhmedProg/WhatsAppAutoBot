@@ -1,4 +1,12 @@
-import { Box, Button, Fade, Slide, SlideFade, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Fade,
+  Slide,
+  SlideFade,
+  Stack,
+  useToast,
+} from "@chakra-ui/react";
 import React, { useState } from "react";
 import PageTitle from "../components/PageTitle";
 import { FiPlus } from "react-icons/fi";
@@ -7,9 +15,17 @@ import GreetingsAndFarewells from "../assets/GreetingsAndFarewells.json";
 import GreetingCard from "../components/GreetingCard";
 import FarewellCard from "../components/FarewellCard";
 import MessageBodyCard from "../components/MessageBodyCard";
+import { create_UUID } from "../Functions/createUUID";
+import { useClient } from "../contexts/ClientContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ComposeMessage() {
+  const { socket } = useClient();
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
   const [addGreeting, setAddGreeting] = useState(false);
+  const [addFarewell, setAddFarewell] = useState(false);
   const initialMessageState = {
     message: [],
     addName: false,
@@ -18,7 +34,6 @@ export default function ComposeMessage() {
   const [greetingMessage, setGreetingMessage] = useState(initialMessageState);
   const [farewellMessage, setFarewellMessage] = useState(initialMessageState);
   const [bodies, setBodies] = useState([]);
-  const [addFarewell, setAddFarewell] = useState(false);
   function handleGreetingMessage(message) {
     setGreetingMessage((prev) => ({ ...prev, message: message }));
   }
@@ -40,11 +55,35 @@ export default function ComposeMessage() {
   function handleBodies(curr) {
     setBodies(curr);
   }
+  function saveMessageToDb() {
+    if (bodies.length < 1) return;
+    setLoading(true);
+    var m = {
+      id: create_UUID(),
+      data: {
+        greetings: greetingMessage.message,
+        addName: greetingMessage.addName,
+        farewells: farewellMessage.message,
+        senderName: farewellMessage.senderName,
+        bodies: bodies,
+      },
+    };
+    socket.emit("save_message", m, (status) => {
+      toast({
+        title: `Message ${m.id} saving ${status.messageSaved}!`,
+        status: status.messageSaved,
+        duration: 5000,
+        isClosable: false,
+      });
+      if (status.messageSaved == "success") {
+        setLoading(false);
+        navigate(`/composeMessage/${m.id}`);
+      }
+    });
+  }
   return (
     <>
-      {console.log("greetingMessage", greetingMessage)}
-      {console.log("farewellMessage", farewellMessage)}
-      <PageTitle>Send Bulk Message</PageTitle>
+      <PageTitle>Compose New Message</PageTitle>
       <Stack
         borderRadius="lg"
         width="90%"
@@ -106,7 +145,14 @@ export default function ComposeMessage() {
           </Button>
         )}
       </Stack>
-      <Button colorScheme="whatsapp">Select Contacts</Button>
+      <Button
+        colorScheme="whatsapp"
+        isLoading={loading}
+        // isDisabled={bodies.length == 0 ? true : false}
+        onClick={saveMessageToDb}
+      >
+        Select Contacts
+      </Button>
     </>
   );
 }

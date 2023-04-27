@@ -31,7 +31,6 @@ export default function MessageBodyCard({ bodies, handleBodies }) {
   const firstFieldRef = useRef(null);
   const [activeBody, setActiveBody] = useState(initialiseMessage);
   const [variables, setVariables] = useState({
-    CONTACTNAME: "",
     BRAND: "",
     PRODUCT: "",
     EMAIL: "",
@@ -47,7 +46,7 @@ If you need any help at all, drop us a line anytime at [EMAIL] or Tweet us [SOCI
   async function addToBodies() {
     var messageToAdd = activeBody.message;
     messageToAdd = await compileMessage(messageToAdd, variables);
-    console.log("messageToAdd", messageToAdd);
+    // console.log("messageToAdd", messageToAdd);
     var mssgId =
       activeBody.id != ""
         ? activeBody.id
@@ -61,7 +60,7 @@ If you need any help at all, drop us a line anytime at [EMAIL] or Tweet us [SOCI
       //else just add the new one
       shallowBody[bodyIndex] = { message: messageToAdd, id: mssgId };
     }
-    console.log("shallowBody", shallowBody);
+    // console.log("shallowBody", shallowBody);
     setActiveBody({ message: messageToAdd, id: mssgId });
     handleBodies(shallowBody);
     toast({
@@ -127,7 +126,10 @@ If you need any help at all, drop us a line anytime at [EMAIL] or Tweet us [SOCI
               borderColor="gray.700"
               color="whatsapp.500"
               onChange={(e) =>
-                setActiveBody({ ...activeBody, message: e.target.value })
+                setActiveBody({
+                  ...activeBody,
+                  message: e.target.value,
+                })
               }
             />
           </Box>
@@ -161,14 +163,10 @@ If you need any help at all, drop us a line anytime at [EMAIL] or Tweet us [SOCI
                 color="whiteAlpha.600"
               />
             </PopoverTrigger>
-            <PopoverContent
-              bg="gray.900"
-              borderColor="whatsapp.600"
-              padding={2}
-            >
+            <PopoverContent bg="gray.900" borderColor="gray.700" padding={2}>
               <PopoverArrow bg="gray.900" />
               <PopoverCloseButton />
-              <PopoverHeader>
+              <PopoverHeader borderColor="gray.700">
                 <Text fontWeight="bold" fontSize="md">
                   Add Variables
                 </Text>
@@ -181,7 +179,7 @@ If you need any help at all, drop us a line anytime at [EMAIL] or Tweet us [SOCI
                       {"["}CONTACTNAME
                       {"]"}
                     </strong>
-                    , add the rest here.
+                    , for the other values add them here.
                   </Text>
                   <Input
                     placeholder="[PRODUCT]"
@@ -268,6 +266,7 @@ If you need any help at all, drop us a line anytime at [EMAIL] or Tweet us [SOCI
                 color="whiteAlpha.600"
                 _hover={{ borderColor: "red.500", color: "red.500" }}
                 onClick={deleteBody}
+                isDisabled={activeBody.id == ""}
               />
             </Tooltip>
             <Tooltip label="Add a new body">

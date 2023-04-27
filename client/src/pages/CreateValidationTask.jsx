@@ -78,7 +78,7 @@ export default function CreateValidationTask() {
       processFile
         .then((data) => {
           setLoading(false);
-          console.log("data", data);
+          // console.log("data", data);
           setFormData((formData) => ({ ...formData, unformattedData: data }));
           //get the unique headers that the file contains
           const uniqueHeaders = uniqueKeys(data);
@@ -96,7 +96,7 @@ export default function CreateValidationTask() {
             duration: 5000,
             isClosable: false,
           });
-          console.log(err);
+          // console.log(err);
         });
     } else {
       toast({
@@ -137,7 +137,7 @@ export default function CreateValidationTask() {
         }
       }
     });
-    console.log("formData.unformattedData", formData.unformattedData);
+    // console.log("formData.unformattedData", formData.unformattedData);
     socket.emit(
       "create_task",
       {
@@ -166,7 +166,7 @@ export default function CreateValidationTask() {
         queryNumber: contact.number,
       };
       taskObject.data.push(dataToPush);
-      console.log("mainString", mainString);
+      // console.log("mainString", mainString);
     });
 
     socket.emit("create_task", taskObject, (status) => {
@@ -175,7 +175,7 @@ export default function CreateValidationTask() {
     setVCardOutput({ ...vCardOutput, mainString });
   }
   function fileUploadedToast(status) {
-    console.log(status);
+    // console.log(status);
     if (!toast.isActive("fileUploaded"))
       toast({
         id: "fileUploaded",
@@ -226,7 +226,7 @@ export default function CreateValidationTask() {
   }, [socket]);
   useEffect(() => {
     if (selectedHeaders.Numbers) {
-      console.log("unformatted data");
+      // console.log("unformatted data");
       setFormData((prev) => ({
         ...prev,
         unformattedData: prev.unformattedData.map((row) => {

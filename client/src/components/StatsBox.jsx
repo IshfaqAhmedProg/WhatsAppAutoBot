@@ -6,7 +6,7 @@ export default function StatsBox({ count, total, title }) {
   return (
     <Box
       position="absolute"
-      bottom="5%"
+      top="5%"
       right="5%"
       fontSize="xs"
       color="whiteAlpha.500"

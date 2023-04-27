@@ -40,10 +40,10 @@ export default function Menu() {
         "Engage with your whatsapp contacts, by sending individual messages and more.",
     },
     {
-      link: "/sendBulkMessages",
-      display: "Send Bulk Messages",
+      link: "/composeMessage",
+      display: "Compose New Message",
       description:
-        "Send bulk messages to as many of your whatsapp contacts as you need.",
+        "Compose a new message and then select contacts to send the messages to.",
     },
   ];
 

@@ -12,6 +12,7 @@ import {
   Tag,
   TagLabel,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import { parsePhoneNumber } from "libphonenumber-js";
 import React from "react";
@@ -21,8 +22,8 @@ export default function ContactCard({
   contact,
   isLoading = false,
   isSelectable = false,
-  select,
-  selected,
+  // select,
+  // selected,
 }) {
   const formattedNumber = parsePhoneNumber(
     `+${contact.contactNumber}`
@@ -34,10 +35,11 @@ export default function ContactCard({
           {isSelectable && (
             <Checkbox
               colorScheme="whatsapp"
-              isChecked={
-                selected.indexOf(contact.contactChatId) != -1 ? true : false
-              }
-              onChange={() => select(contact.contactChatId)}
+              value={contact.contactChatId}
+              // isChecked={
+              //   selected.indexOf(contact.contactChatId) != -1 ? true : false
+              // }
+              // onChange={() => select(contact.contactChatId)}
             />
           )}
           {contact.contactProfilePicUrl ? (
@@ -51,9 +53,11 @@ export default function ContactCard({
           )}
           <Box>
             <Stack direction="row" color="whiteAlpha.800">
-              <Text fontWeight="bold" fontSize="md">
-                {contact.contactName}
-              </Text>
+              <Tooltip label={contact.contactName}>
+                <Text fontWeight="bold" fontSize="md" noOfLines={1} maxW="3xs">
+                  {contact.contactName}
+                </Text>
+              </Tooltip>
               <Text color="whiteAlpha.500" fontSize="md">
                 {contact.contactPushName}
               </Text>

@@ -17,7 +17,7 @@ export const ClientContextProvider = ({ children }) => {
     setClientData({ id: id, name: name });
     localStorage.setItem("id", id);
     localStorage.setItem("name", name);
-    console.log("registering id:" + id + " name:" + name);
+    // console.log("registering id:" + id + " name:" + name);
   };
   const removeClient = () => {
     localStorage.removeItem("id");
@@ -26,9 +26,9 @@ export const ClientContextProvider = ({ children }) => {
   };
 
   function handleConnect() {
-    // if (!clientData.id) {
-    //   navigate("/");
-    // }
+    if (!clientData.id) {
+      navigate("/");
+    }
     setServerConnection(true);
   }
   function handleDisconnect() {

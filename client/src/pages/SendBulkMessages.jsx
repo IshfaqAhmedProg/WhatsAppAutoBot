@@ -101,7 +101,7 @@ export default function SendBulkMessages() {
   }, []);
   return (
     <>
-      {console.log(selectedContacts)}
+      {/* {console.log(selectedContacts)} */}
 
       <Heading color="gray.700">Send Bulk Messages</Heading>
 

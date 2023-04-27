@@ -9,6 +9,7 @@ export default function PageTitle({ children }) {
       left="50%"
       top="10%"
       transform="translate(-50%,-10%)"
+      fontSize="3xl"
     >
       {children}
     </Heading>

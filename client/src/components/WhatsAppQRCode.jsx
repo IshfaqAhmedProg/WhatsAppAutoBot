@@ -48,7 +48,7 @@ export default function WhatsAppQRCode({ qr }) {
             ></path>
           </svg>
         </span>
-        {console.log(qr)}
+        {/* {console.log(qr)} */}
         <QRCode value={qr} fgColor="#123033" />
       </Box>
     </Box>

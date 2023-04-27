@@ -10,7 +10,7 @@ import { TbCircleDotFilled } from "react-icons/tb";
 import AllContacts from "./pages/AllContacts";
 import ValidateNumbers from "./pages/ValidateNumbers";
 import ValidationResult from "./pages/ValidationResult";
-import SelectContacts from "./components/SelectContacts";
+import SelectContacts from "./pages/SelectContacts";
 import { useClient } from "./contexts/ClientContext";
 import packageJSON from "../package.json";
 import ComposeMessage from "./pages/ComposeMessage";
@@ -91,8 +91,8 @@ export default function App() {
         overflow="hidden"
         padding="8.5em 2em 2em 2em"
         marginInline="auto"
-        width="60%"
-        maxW="container.lg"
+        width="70%"
+        maxW="container.md"
         height="80%"
         display="flex"
         flexDirection="column"
@@ -116,9 +116,9 @@ export default function App() {
             </Route>
 
             <Route path="/allContacts" element={<AllContacts />} />
-            <Route path="/sendBulkMessages">
+            <Route path="/composeMessage">
               <Route index element={<ComposeMessage />} />
-              <Route path=":sendType" element={<SelectContacts />} />
+              <Route path=":messageId" element={<SelectContacts />} />
             </Route>
           </Route>
         </Routes>

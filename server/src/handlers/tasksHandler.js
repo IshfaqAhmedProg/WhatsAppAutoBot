@@ -2,6 +2,7 @@ const { WhatsAppContact } = require("../classes/WhatsAppContact")
 const fs = require('fs')
 const { joinData } = require("../utils/joinData")
 const { listDir } = require("../utils/listDir")
+const { formattedDate } = require("../utils/formattedDate")
 exports.getTasks = function (socket, db, activeClientData) {
     socket.on('get_tasks', async (data) => {
         try {
@@ -25,10 +26,9 @@ exports.createTask = function (socket, db, activeClientData) {
                     callback({ fileUploaded: err ? "error" : "success" });
                 });
             }
-            var dateOptions = {};
-            dateOptions.year = dateOptions.month = dateOptions.day = dateOptions.hour = dateOptions.minute = dateOptions.second = 'numeric'
+
             await db.push(`/clientsData/${activeClientData.id}/tasks/${task.id}`, {
-                createdAt: new Date().toLocaleString('sv-SE', dateOptions),
+                createdAt: formattedDate(),
                 length: task.data.length
             }, true)
             await db.push(`/clientsData/${activeClientData.id}/tasksData/${task.id}`, task.data, true)
