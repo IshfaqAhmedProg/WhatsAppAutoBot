@@ -4,10 +4,8 @@ import {
   CardBody,
   Checkbox,
   Image,
+  Progress,
   Skeleton,
-  SkeletonCircle,
-  SkeletonText,
-  Spinner,
   Stack,
   Tag,
   TagLabel,
@@ -22,25 +20,30 @@ export default function ContactCard({
   contact,
   isLoading = false,
   isSelectable = false,
-  // select,
-  // selected,
+  progressBar = false,
+  progress = 0,
 }) {
   const formattedNumber = parsePhoneNumber(
     `+${contact.contactNumber}`
   ).formatInternational();
   return (
     <Card bg="gray.800" position="relative">
+      {/* {console.log(progress)} */}
+      {progressBar && (
+        <Progress
+          size="xs"
+          colorScheme="whatsapp"
+          value={progress}
+          hasStripe
+          borderRadius="xl"
+          isIndeterminate={progress == 0 ? true : false}
+          bg="gray.900"
+        />
+      )}
       <Skeleton isLoaded={!isLoading}>
         <CardBody display="flex" gap="3">
           {isSelectable && (
-            <Checkbox
-              colorScheme="whatsapp"
-              value={contact.contactChatId}
-              // isChecked={
-              //   selected.indexOf(contact.contactChatId) != -1 ? true : false
-              // }
-              // onChange={() => select(contact.contactChatId)}
-            />
+            <Checkbox colorScheme="whatsapp" value={contact.contactChatId} />
           )}
           {contact.contactProfilePicUrl ? (
             <Image
@@ -62,6 +65,7 @@ export default function ContactCard({
                 {contact.contactPushName}
               </Text>
             </Stack>
+
             {contact.contactIsWAContact && (
               <Tag
                 position="absolute"

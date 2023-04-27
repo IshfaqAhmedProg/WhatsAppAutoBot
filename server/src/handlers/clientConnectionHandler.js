@@ -6,11 +6,9 @@ exports.clientConnection = function (socket, wwebjsClient) {
         socket.disconnect();
         loggedOut = true;
     })
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         console.log('Socket Disconnected')
-        if (loggedOut == true) {
-            wwebjsClient.destroy()
-            console.log('Wwebjs client destroyed!')
-        }
+        await wwebjsClient.destroy()
+        console.log('Wwebjs client destroyed!')
     })
 }

@@ -34,7 +34,7 @@ export default function Menu() {
         "Validate the contacts you created vCards for, after saving the .vcf to your device",
     },
     {
-      link: "/allContacts",
+      link: "/sendMessage/612d8dfde4",
       display: "All Contacts",
       description:
         "Engage with your whatsapp contacts, by sending individual messages and more.",

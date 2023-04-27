@@ -69,7 +69,7 @@ export default function AllContacts() {
         });
         if (status.receiversSaved == "success") {
           setLoading(false);
-          navigate(`/menu`);
+          navigate(`/sendMessage/${messageId}`);
         }
       }
     );
@@ -105,9 +105,9 @@ export default function AllContacts() {
       {/* {console.log("allContacts", allContacts)}
       {console.log("selected", selectedContacts)} */}
       <StatsBox
-        count={allContacts.length}
+        count={selectedContacts.length}
         total={currentPageStat.totalContacts}
-        title="Contacts shown"
+        title="Contacts selected"
       />
       <Text maxW="lg" color="whatsapp.500" textAlign="center">
         You can select the contacts to send the message to, or click on 'Send to

@@ -33,10 +33,10 @@ exports.getAllContacts = function (socket, db, wwebjsClient, activeClientData) {
         })
     })
 }
-exports.getContactsFragment = function (socket, db, clientData) {
+exports.getContactsFragment = function (socket, db, activeClientData) {
     socket.on('get_contacts_fragment', async (data) => {
         // The array to be paginated
-        const contactsFromDb = await db.getData(`/clientsData/${clientData.id}/contacts/contactsInDevice`); // fill with your array data
+        const contactsFromDb = await db.getData(`/clientsData/${activeClientData.id}/contacts/contactsInDevice`); // fill with your array data
         // Calculate the total number of pages
         const totalPages = Math.ceil(contactsFromDb.length / data.itemsPerPage);
 
@@ -55,5 +55,19 @@ exports.getContactsFragment = function (socket, db, clientData) {
                 totalContacts: contactsFromDb.length
             }
         )
+    })
+}
+exports.getContactById = function (socket, db, activeClientData) {
+    socket.on("get_contact_by_id", async (payload, callback) => {
+        // console.log(payload)
+        try {
+            const contactsFromDb = await db.getData(`/clientsData/${activeClientData.id}/contacts/contactsInDevice`); // fill with your array data
+            const filteredArray = contactsFromDb.filter(obj => payload.contacts.includes(obj.contactChatId));
+            callback(filteredArray)
+        } catch (error) {
+            console.log(error)
+            callback({ status: "error" })
+        }
+
     })
 }

@@ -14,6 +14,7 @@ import SelectContacts from "./pages/SelectContacts";
 import { useClient } from "./contexts/ClientContext";
 import packageJSON from "../package.json";
 import ComposeMessage from "./pages/ComposeMessage";
+import SendMessage from "./components/SendMessage";
 export default function App() {
   const { socket, serverConnection, handleConnect, handleDisconnect } =
     useClient();
@@ -115,10 +116,13 @@ export default function App() {
               <Route path=":taskId" element={<ValidationResult />} />
             </Route>
 
-            <Route path="/allContacts" element={<AllContacts />} />
+            <Route path="/allContacts" element={<SendMessage />} />
             <Route path="/composeMessage">
               <Route index element={<ComposeMessage />} />
               <Route path=":messageId" element={<SelectContacts />} />
+            </Route>
+            <Route path="/sendMessage">
+              <Route path=":messageId" element={<SendMessage />} />
             </Route>
           </Route>
         </Routes>
