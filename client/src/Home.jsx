@@ -18,7 +18,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import WhatsAppQRCode from "./components/WhatsAppQRCode";
 import { useClient } from "./contexts/ClientContext";
-import { create_UUID } from "./Functions/createUUID";
+import { create_UUID } from "./functions/createUUID";
 import "./index.css";
 import { TbTrashXFilled } from "react-icons/tb";
 import { FiLogIn } from "react-icons/fi";
