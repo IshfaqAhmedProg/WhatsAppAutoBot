@@ -15,6 +15,7 @@ import { useClient } from "./contexts/ClientContext";
 import packageJSON from "../package.json";
 import ComposeMessage from "./pages/ComposeMessage";
 import SendMessage from "./components/SendMessage";
+import AllMessages from "./pages/AllMessages";
 export default function App() {
   const { socket, serverConnection, handleConnect, handleDisconnect } =
     useClient();
@@ -117,6 +118,7 @@ export default function App() {
             </Route>
 
             <Route path="/allContacts" element={<SendMessage />} />
+            <Route path="/allMessages" element={<AllMessages />} />
             <Route path="/composeMessage">
               <Route index element={<ComposeMessage />} />
               <Route path=":messageId" element={<SelectContacts />} />

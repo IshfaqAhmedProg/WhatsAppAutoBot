@@ -29,12 +29,12 @@ export default function Menu() {
     },
     {
       link: "/validateNumbers",
-      display: "Validate Numbers",
+      display: "Validation Tasks",
       description:
-        "Validate the contacts you created vCards for, after saving the .vcf to your device",
+        "Check validation tasks and validate the contacts you created vCards for, after saving the .vcf to your device",
     },
     {
-      link: "/sendMessage/612d8dfde4",
+      link: "/allContacts",
       display: "All Contacts",
       description:
         "Engage with your whatsapp contacts, by sending individual messages and more.",
@@ -44,6 +44,12 @@ export default function Menu() {
       display: "Compose New Message",
       description:
         "Compose a new message and then select contacts to send the messages to.",
+    },
+    {
+      link: "/allMessages",
+      display: "All Messages",
+      description:
+        "Resend messages to other users or resume if the message sending was stopped",
     },
   ];
 
