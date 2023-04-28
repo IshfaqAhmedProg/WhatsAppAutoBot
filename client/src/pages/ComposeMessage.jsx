@@ -56,7 +56,15 @@ export default function ComposeMessage() {
     setBodies(curr);
   }
   function saveMessageToDb() {
-    if (bodies.length < 1) return;
+    if (bodies.length < 1) {
+      toast({
+        title: `Add a body to proceed`,
+        status: "info",
+        duration: 2500,
+        isClosable: false,
+      });
+      return;
+    }
     setLoading(true);
     var m = {
       id: create_UUID(),

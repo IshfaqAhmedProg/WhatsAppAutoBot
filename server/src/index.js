@@ -13,7 +13,7 @@ const { getAllContacts, getContactsFragment, getContactById } = require('./handl
 const { getTasks, createTask, getTaskData, deleteTask, getTaskResults } = require('./handlers/tasksHandler');
 const { clientConnection } = require('./handlers/clientConnectionHandler');
 const { deleteClient } = require('./handlers/clientHandler');
-const { saveMessage, saveReceivers, getMessageData, sendMessage } = require('./handlers/messageHandler');
+const { saveMessage, saveReceivers, getMessageData, sendTextMessage, getAllMessages } = require('./handlers/messageHandler');
 const packageJson = require('../package.json');
 //mac path replace
 let chromiumExecutablePath = (isPkg ?
@@ -96,7 +96,7 @@ io.on('connection', async (socket) => {
                 clientId: activeClientData.id
             }),
             puppeteer: {
-                args: ['--no-sandbox'],
+                args: ['--no-sandbox', '--single-process', '--no-zygote'],
                 executablePath: './chromium/chrome-win/chrome.exe'
             }
         });
@@ -141,7 +141,8 @@ io.on('connection', async (socket) => {
         saveReceivers(socket, db, activeClientData)
         getMessageData(socket, db, activeClientData)
         getContactById(socket, db, activeClientData)
-        sendMessage(socket, db, wwebjsClient, activeClientData)
+        sendTextMessage(socket, db, wwebjsClient, activeClientData)
+        getAllMessages(socket, db, activeClientData)
         //handle logouts and disconnect
         clientConnection(socket, wwebjsClient)
     })

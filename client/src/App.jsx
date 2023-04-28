@@ -117,7 +117,7 @@ export default function App() {
               <Route path=":taskId" element={<ValidationResult />} />
             </Route>
 
-            <Route path="/allContacts" element={<SendMessage />} />
+            <Route path="/allContacts" element={<AllContacts />} />
             <Route path="/allMessages" element={<AllMessages />} />
             <Route path="/composeMessage">
               <Route index element={<ComposeMessage />} />

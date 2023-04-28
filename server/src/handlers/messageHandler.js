@@ -46,15 +46,28 @@ exports.getMessageData = function (socket, db, activeClientData) {
         }
     })
 }
-exports.sendMessage = function (socket, db, wwebjsClient, activeClientData) {
+exports.sendTextMessage = function (socket, db, wwebjsClient, activeClientData) {
     socket.on('send_message', async (payload, callback) => {
-        console.log(payload)
+        // console.log(payload)
+        //payload={id:'',to:'',message:''}
         try {
-            await db.push(`/clientsData/${activeClientData.id}/messages/${payload.id}/sentTo`, payload.sentTo, true)
-            callback({ status: "success" })
+            await wwebjsClient.sendMessage(payload.to, payload.message)
+            await db.push(`/clientsData/${activeClientData.id}/messages/${payload.id}/sentTo[]`, payload.to, true)
+            const sentTo = await db.getData(`/clientsData/${activeClientData.id}/messages/${payload.id}/sentTo`)
+            callback({ data: sentTo, error: false })
         } catch (error) {
-            callback({ status: "error" })
-
+            callback({ data: {}, error: false })
+        }
+    })
+}
+exports.getAllMessages = function (socket, db, activeClientData) {
+    socket.on('get_all_messages', async (payload, callback) => {
+        // console.log(payload)
+        try {
+            const allMessages = await db.getData(`/clientsData/${activeClientData.id}/messages/`)
+            callback({ data: allMessages, error: false })
+        } catch (error) {
+            callback({ data: {}, error: true })
         }
     })
 }

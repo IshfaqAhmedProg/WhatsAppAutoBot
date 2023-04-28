@@ -113,23 +113,23 @@ export default function SendMessage() {
             message: generateMessage(messageData, receiver?.contactName),
           },
           (response) => {
-            if (response.status === "error") {
+            if (response.error) {
+              //pause on error
+              setPaused(true);
               toast({
                 title: `Error sending message to ${receiver.contactName}`,
                 status: "error",
                 duration: 2500,
                 isClosable: false,
               });
-              //pause on error
-              setPaused(true);
             } else {
+              setSentTo(response.data);
               toast({
                 title: `Message sent to ${receiver.contactName}`,
                 status: "success",
                 duration: 2500,
                 isClosable: false,
               });
-              setSentTo((prev) => [...prev, receiver.contactChatId]);
             }
           }
         );
@@ -163,7 +163,7 @@ export default function SendMessage() {
           <Stack direction="row" justifyContent="space-between">
             <Stat colorScheme="whatsapp" color="whiteAlpha.600">
               <StatLabel fontWeight="bold">
-                {activeMessage === 0
+                {activeMessage === 0 && paused
                   ? "Press start to begin"
                   : activeMessage === receiversData?.length
                   ? "Wait while you are redirected in"
@@ -183,7 +183,7 @@ export default function SendMessage() {
               </StatHelpText>
             </Stat>
             <Stack direction="row">
-              {activeMessage === 0 ? (
+              {activeMessage === 0 && paused ? (
                 <Button colorScheme="whatsapp" onClick={handleResume}>
                   Start
                 </Button>
@@ -213,6 +213,10 @@ export default function SendMessage() {
                   icon={<BiX fontSize="25px" />}
                   bg="blackAlpha.500"
                   _hover={{ borderColor: "red.500", color: "red.500" }}
+                  onClick={() => {
+                    setPaused(true);
+                    navigate("/menu");
+                  }}
                 />
               </Tooltip>
             </Stack>

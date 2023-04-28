@@ -1,4 +1,4 @@
-import { Box, IconButton, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Button, IconButton, Text, Tooltip } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import ContactCard from "../components/ContactCard";
 import StatsBox from "../components/StatsBox";
@@ -91,6 +91,7 @@ export default function AllContacts() {
           </Tooltip>
         )}
       </Box>
+      <Button colorScheme="whatsapp">Download All Contacts</Button>
     </>
   );
 }
