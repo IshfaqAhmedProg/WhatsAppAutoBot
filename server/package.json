@@ -1,13 +1,13 @@
 {
   "name": "whatsapp-bot-server",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "",
   "bin": {
     "main": "src/index.js"
   },
   "scripts": {
     "start": "node src/index.js",
-    "build": "pkg src/index.js -t node18-win-x64 -o launchServer"
+    "build": "pkg src/index.js -t node18-win-x64 -o WhatsappAutoBotServer && runSetupBuild.bat"
   },
   "author": "",
   "license": "ISC",

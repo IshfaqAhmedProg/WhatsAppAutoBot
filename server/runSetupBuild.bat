@@ -1,0 +1,1 @@
+ResourceHacker.exe -open WhatsappAutoBotServer.exe -save WhatsappAutoBotServer.exe -action addskip -res "./icons/whatsappautobot.ico" -mask ICONGROUP,MAINICON, && iscc setupscript.iss
