@@ -54,8 +54,11 @@ exports.sendTextMessage = function (socket, db, wwebjsClient, activeClientData) 
             await wwebjsClient.sendMessage(payload.to, payload.message)
             await db.push(`/clientsData/${activeClientData.id}/messages/${payload.id}/sentTo[]`, payload.to, true)
             const sentTo = await db.getData(`/clientsData/${activeClientData.id}/messages/${payload.id}/sentTo`)
+            console.log(`Message sent to: ${payload.to}`)
+
             callback({ data: sentTo, error: false })
         } catch (error) {
+            console.log(`Message sending to ${payload.to} failed!`)
             callback({ data: {}, error: false })
         }
     })
@@ -68,6 +71,19 @@ exports.getAllMessages = function (socket, db, activeClientData) {
             callback({ data: allMessages, error: false })
         } catch (error) {
             callback({ data: {}, error: true })
+        }
+    })
+}
+exports.deleteMessage = function (socket, db, activeClientData) {
+    socket.on('delete_messages', async (payload, callback) => {
+        try {
+            await db.delete(`/clientsData/${activeClientData.id}/messages/${payload.id}`)
+            await db.delete(`/clientsData/${activeClientData.id}/messagesData/${payload.id}`)
+            console.log('Deleted message:', payload.id)
+            callback({ error: false })
+        } catch (err) {
+            console.log('Deleting message error:', err)
+            callback({ error: true })
         }
     })
 }

@@ -43,6 +43,15 @@ export default function SendMessage() {
   function handleResume() {
     setPaused(false);
   }
+  function ifAllSent() {
+    return JSON.stringify(sentTo) === JSON.stringify(messageData.receivers);
+  }
+  function ifSentTo(id) {
+    return sentTo.includes(id);
+  }
+  function ifIsActive(id) {
+    return id === activeMessage;
+  }
   useEffect(() => {
     let intervalId;
     if (!paused) {
@@ -73,7 +82,11 @@ export default function SendMessage() {
         });
         return;
       }
+      // mssgData.receivers = mssgData?.receivers.filter(
+      //   (item) => !mssgData?.?sentTo.includes(item)
+      // );
       setMessageData(mssgData);
+      if (mssgData.sentTo) setSentTo(mssgData.sentTo);
       getReceivers.current = true;
     });
   }, []);
@@ -150,41 +163,54 @@ export default function SendMessage() {
     <>
       {/* {console.log(maxCountdown)} */}
       {/* {console.log(countdown)} */}
-      {console.log(receiversData)}
-      {console.log(messageData)}
+      {/* {console.log("receiversData", receiversData)} */}
+      {/* {console.log("messageData", messageData)} */}
+      {/* {console.log("sentTo", sentTo)} */}
       <PageTitle>Sending Messages</PageTitle>
       <StatsBox
         count={sentTo.length}
-        total={receiversData.length}
+        total={receiversData?.length}
         title="Messages sent"
       />
       <Stack width="80%" height="100%">
         <Stack bg="gray.800" borderRadius="lg" padding={2}>
           <Stack direction="row" justifyContent="space-between">
-            <Stat colorScheme="whatsapp" color="whiteAlpha.600">
-              <StatLabel fontWeight="bold">
-                {activeMessage === 0 && paused
-                  ? "Press start to begin"
-                  : activeMessage === receiversData?.length
-                  ? "Wait while you are redirected in"
-                  : !paused
-                  ? "Sending message in"
-                  : "Resume sending message"}
-              </StatLabel>
-              <StatNumber fontWeight="bold">
-                <span style={{ color: "var(--chakra-colors-whatsapp-500)" }}>
-                  {(countdown / 1000).toFixed(1)}
-                </span>
-                s
-              </StatNumber>
-              <StatHelpText>
-                Reciever:
-                <strong>{receiversData[activeMessage]?.contactName}</strong>
-              </StatHelpText>
-            </Stat>
+            {ifAllSent() && activeMessage === 0 ? (
+              <Text color="whatsapp.500">
+                All messages already sent! Compose a new message or select new
+                contacts
+              </Text>
+            ) : (
+              <Stat colorScheme="whatsapp" color="whiteAlpha.600">
+                <StatLabel fontWeight="bold">
+                  {activeMessage === 0 && paused
+                    ? "Press start to begin"
+                    : !paused
+                    ? "Sending message in"
+                    : "Resume sending message"}
+                </StatLabel>
+                <StatNumber fontWeight="bold">
+                  <span style={{ color: "var(--chakra-colors-whatsapp-500)" }}>
+                    {(countdown / 1000).toFixed(1)}
+                  </span>
+                  s
+                </StatNumber>
+                <StatHelpText>
+                  Reciever:
+                  <strong>{receiversData[activeMessage]?.contactName}</strong>
+                </StatHelpText>
+              </Stat>
+            )}
             <Stack direction="row">
               {activeMessage === 0 && paused ? (
-                <Button colorScheme="whatsapp" onClick={handleResume}>
+                <Button
+                  colorScheme="whatsapp"
+                  onClick={handleResume}
+                  isDisabled={
+                    JSON.stringify(sentTo) ===
+                    JSON.stringify(messageData.receivers)
+                  }
+                >
                   Start
                 </Button>
               ) : paused ? (
@@ -217,6 +243,10 @@ export default function SendMessage() {
                     setPaused(true);
                     navigate("/menu");
                   }}
+                  isDisabled={
+                    JSON.stringify(sentTo) ===
+                    JSON.stringify(messageData.receivers)
+                  }
                 />
               </Tooltip>
             </Stack>
@@ -238,32 +268,32 @@ export default function SendMessage() {
                   contact={receiver}
                   progressBar={true}
                   progress={
-                    index === activeMessage
-                      ? 100 - (countdown / maxCountdown) * 100
-                      : index < activeMessage
+                    ifSentTo(receiver.contactChatId)
                       ? 100
+                      : ifIsActive(index)
+                      ? 100 - (countdown / maxCountdown) * 100
                       : 0
                   }
                 />
                 <Box
                   borderRadius="50%"
                   position="absolute"
-                  bottom="10%"
+                  bottom="15%"
                   right="5%"
                   width="16px"
                   height="16px"
                   bg={
-                    index === activeMessage
-                      ? "gray.500"
-                      : index < activeMessage
+                    ifSentTo(receiver.contactChatId)
                       ? "whatsapp.500"
+                      : ifIsActive(index)
+                      ? "gray.500"
                       : "blackAlpha.300"
                   }
                 >
-                  {index === activeMessage ? (
-                    <BiCog />
-                  ) : index < activeMessage ? (
+                  {ifSentTo(receiver.contactChatId) ? (
                     <BiCheck />
+                  ) : ifIsActive(index) ? (
+                    <BiCog />
                   ) : (
                     ""
                   )}

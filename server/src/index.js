@@ -13,7 +13,7 @@ const { getAllContacts, getContactsFragment, getContactById } = require('./handl
 const { getTasks, createTask, getTaskData, deleteTask, getTaskResults } = require('./handlers/tasksHandler');
 const { clientConnection } = require('./handlers/clientConnectionHandler');
 const { deleteClient } = require('./handlers/clientHandler');
-const { saveMessage, saveReceivers, getMessageData, sendTextMessage, getAllMessages } = require('./handlers/messageHandler');
+const { saveMessage, saveReceivers, getMessageData, sendTextMessage, getAllMessages, deleteMessage } = require('./handlers/messageHandler');
 const packageJson = require('../package.json');
 //mac path replace
 let chromiumExecutablePath = (isPkg ?
@@ -143,6 +143,7 @@ io.on('connection', async (socket) => {
         getContactById(socket, db, activeClientData)
         sendTextMessage(socket, db, wwebjsClient, activeClientData)
         getAllMessages(socket, db, activeClientData)
+        deleteMessage(socket, db, activeClientData)
         //handle logouts and disconnect
         clientConnection(socket, wwebjsClient)
     })

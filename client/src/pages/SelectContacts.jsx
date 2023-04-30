@@ -10,6 +10,10 @@ import {
   CheckboxGroup,
   IconButton,
   Stack,
+  Tag,
+  TagCloseButton,
+  TagLabel,
+  TagRightIcon,
   Text,
   Tooltip,
   useToast,
@@ -21,14 +25,16 @@ import { FiArrowDown } from "react-icons/fi";
 import { useClient } from "../contexts/ClientContext";
 import PageTitle from "../components/PageTitle";
 import { useNavigate, useParams } from "react-router-dom";
+import { MdCheck } from "react-icons/md";
 export default function AllContacts() {
   const { socket } = useClient();
   const navigate = useNavigate();
   const messageId = useParams().messageId;
-  const itemsPerPage = 20;
+  const itemsPerPage = 100;
   const [loading, setLoading] = useState(false);
   const [allContacts, setAllContacts] = useState([]);
   const [selectedContacts, setSelectedContacts] = useState([]);
+  const [messageData, setMessageData] = useState({});
   const [currentPageStat, setCurrentPageStat] = useState({
     page: 1,
     totalPages: 0,
@@ -75,9 +81,27 @@ export default function AllContacts() {
     );
   }
   useEffect(() => {
+    setLoading(true);
     socket.emit("get_contacts_fragment", {
       page: 1,
       itemsPerPage,
+    });
+    socket.emit("get_message_data", { id: messageId }, (mssgData) => {
+      if (mssgData.status == "error") {
+        toast({
+          title: `Error getting message data!`,
+          status: "error",
+          duration: 5000,
+          isClosable: false,
+        });
+        return;
+      }
+      setMessageData(mssgData);
+      if (mssgData.receivers)
+        setSelectedContacts((prev) => [
+          ...new Set([...prev, ...mssgData.receivers]),
+        ]);
+      setLoading(false);
     });
   }, []);
   useEffect(() => {
@@ -102,8 +126,9 @@ export default function AllContacts() {
   return (
     <>
       <PageTitle>Select Contacts</PageTitle>
-      {/* {console.log("allContacts", allContacts)}
-      {console.log("selected", selectedContacts)} */}
+      {/* {console.log("allContacts", allContacts)} */}
+      {console.log("selected", selectedContacts)}
+      {console.log("mssgData", messageData?.receivers)}
       <StatsBox
         count={selectedContacts.length}
         total={currentPageStat.totalContacts}
@@ -164,14 +189,31 @@ export default function AllContacts() {
                 {allContacts.map((contact) => {
                   if (contact.contactName != "unavailable")
                     return (
-                      <ContactCard
-                        key={contact.contactId}
-                        contact={contact}
-                        isLoading={loading}
-                        isSelectable
-                        // select={selectContacts}
-                        // selected={selectedContacts}
-                      />
+                      <Box position="relative">
+                        <ContactCard
+                          key={contact.contactId}
+                          contact={contact}
+                          isLoading={loading}
+                          isSelectable
+                        />
+                        {messageData.sentTo?.includes(
+                          contact.contactChatId
+                        ) && (
+                          <Tag
+                            size="sm"
+                            position="absolute"
+                            bottom="10%"
+                            right="3%"
+                            colorScheme="whatsapp"
+                            borderRadius="md"
+                            variant="solid"
+                            color="whatsapp.800"
+                          >
+                            <TagLabel>Already sent</TagLabel>
+                            <TagRightIcon as={MdCheck} />
+                          </Tag>
+                        )}
+                      </Box>
                     );
                 })}
               </CheckboxGroup>

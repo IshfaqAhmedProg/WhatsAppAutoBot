@@ -78,7 +78,7 @@ export default function AllContacts() {
           Contacts in your phone
         </Text>
         {allContacts.map((contact) => {
-          return <ContactCard key={contact.contactId} contact={contact} />;
+          return <ContactCard key={contact.contactChatId} contact={contact} />;
         })}
         {currentPageStat.page != currentPageStat.totalPages && (
           <Tooltip label="Load more">

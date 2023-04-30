@@ -1,40 +1,46 @@
 import React, { useEffect, useState } from "react";
 import PageTitle from "../components/PageTitle";
-import ListCard from "../components/ListCard";
-import { IconButton, Stack, Tooltip } from "@chakra-ui/react";
-import { MdContactPhone, MdSend } from "react-icons/md";
-import { TbTrashXFilled } from "react-icons/tb";
+import MessageCard from "../components/MessageCard";
+import { IconButton, Stack, Tooltip, useToast } from "@chakra-ui/react";
+
 import { useClient } from "../contexts/ClientContext";
+import { useNavigate } from "react-router-dom";
 export default function AllMessages() {
   const { socket } = useClient();
-  const buttons = (
-    <>
-      <Tooltip label="Delete ">
-        <IconButton
-          icon={<TbTrashXFilled />}
-          colorScheme="blackAlpha"
-          color="whiteAlpha.600"
-          _hover={{ borderColor: "red.500", color: "red.500" }}
-        />
-      </Tooltip>
-      <Tooltip label="Select more contacts">
-        <IconButton
-          icon={<MdContactPhone />}
-          colorScheme="blackAlpha"
-          color="whiteAlpha.600"
-          _hover={{ color: "whatsapp.500" }}
-        />
-      </Tooltip>
-      <Tooltip label="Send Again">
-        <IconButton
-          icon={<MdSend />}
-          colorScheme="blackAlpha"
-          color="whatsapp.500"
-        />
-      </Tooltip>
-    </>
-  );
   const [allMessages, setAllMessages] = useState([]);
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  function sendHandler(id) {
+    navigate(`/sendMessage/${id}`);
+  }
+  function selectHandler(id) {
+    navigate(`/composeMessage/${id}`);
+  }
+  function deleteHandler(id) {
+    socket.emit("delete_messages", { id: id }, (status) => {
+      if (status.error) {
+        toast({
+          title: `Error deleting message!`,
+          status: "error",
+          duration: 5000,
+          isClosable: false,
+        });
+        return;
+      }
+      if (allMessages.length != 0) {
+        var mssgs = allMessages.filter((m) => m?.id != id);
+        console.log(mssgs);
+        setAllMessages(mssgs);
+        toast({
+          title: `Deleted message ${id}`,
+          status: "success",
+          duration: 5000,
+          isClosable: false,
+        });
+      }
+    });
+  }
   useEffect(() => {
     socket.emit("get_all_messages", {}, (status) => {
       if (status.error) {
@@ -58,16 +64,18 @@ export default function AllMessages() {
         {Object.keys(allMessages).map((message) => {
           const stats =
             "Sent to " +
-            allMessages[message].sentTo?.length +
+            (allMessages[message].sentTo?.length || "0") +
             " out of " +
             allMessages[message].receivers?.length;
           return (
-            <ListCard
+            <MessageCard
               key={message}
-              buttons={buttons}
               id={message}
               stats={stats}
               datetime={allMessages[message].createdAt}
+              sendHandler={sendHandler}
+              selectHandler={selectHandler}
+              deleteHandler={deleteHandler}
             />
           );
         })}
