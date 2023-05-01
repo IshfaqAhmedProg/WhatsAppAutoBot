@@ -1,0 +1,1 @@
+iscc setupscript.iss

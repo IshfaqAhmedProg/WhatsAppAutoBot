@@ -1,17 +1,18 @@
 {
   "name": "whatsapp-bot-server",
-  "version": "0.4.3",
+  "version": "0.4.5",
   "description": "",
   "bin": {
     "main": "src/index.js"
   },
   "scripts": {
     "start": "node src/index.js",
-    "build": "pkg src/index.js -t node18-win-x64 -o WhatsappAutoBotServer && runSetupBuild.bat"
+    "build": "pkg src/index.js -t node18-win-x64 -o build/WhatsappAutoBotServer && cd build && runSetupBuild.bat && cd .."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@angablue/exe": "^1.2.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "mongoose": "^7.0.0",
