@@ -141,7 +141,7 @@ export default function Home() {
         {!qr ? (
           <>
             <Link
-              to="https://downgit.github.io/#/home?url=https://github.com/IshfaqAhmedProg/WhatsAppAutoBot-Dist/tree/04ebc5a19bc39a1ac0a1cb63e8f62e7384283f10"
+              to="https://drive.google.com/uc?export=download&id=1luMdSz3yf91cncaN7M0_tJgM9xjWv_Pb"
               target="_blank"
             >
               <ButtonGroup isAttached>
