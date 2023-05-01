@@ -34,6 +34,7 @@ exports.createTask = function (socket, db, activeClientData) {
             await db.push(`/clientsData/${activeClientData.id}/tasksData/${task.id}`, task.data, true)
             socket.emit('task_created')
         } catch (error) {
+            console.log("Error creating task", error)
         }
     })
 }

@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "WhatsappAutoBot"
-#define MyAppVersion "0.4.3"
+#define MyAppVersion "0.4.8"
 #define MyAppPublisher "Ishfaq Ahmed"
 #define MyAppURL "https://www.whatsappautobot.vercel.com/"
 #define MyAppExeName "WhatsappAutoBotServer.exe"
