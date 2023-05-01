@@ -4,4 +4,5 @@ dataPool.json
 filePool
 chromium
 launchServer.exe
-setup
+build/setup
+build/WhatsappAutoBotServer.exe

@@ -25,6 +25,7 @@ let chromiumExecutablePath = (isPkg ?
 );
 
 console.log(process.platform)
+console.log('version' + packageJson.version)
 //check win32
 if (process.platform == 'win32') {
     chromiumExecutablePath = (isPkg ?
@@ -96,7 +97,7 @@ io.on('connection', async (socket) => {
                 clientId: activeClientData.id
             }),
             puppeteer: {
-                args: ['--no-sandbox', '--single-process', '--no-zygote'],
+                args: ['--no-sandbox'],
                 executablePath: './chromium/chrome-win/chrome.exe'
             }
         });

@@ -25,7 +25,10 @@ import vCardsJS from "vcards-js";
 import { isMobilePhone } from "validator";
 import { create_UUID } from "../functions/createUUID";
 import ContactCard from "../components/ContactCard";
-import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
+import {
+  isValidPhoneNumber,
+  parsePhoneNumber,
+} from "libphonenumber-js";
 import { useClient } from "../contexts/ClientContext";
 import PageTitle from "../components/PageTitle";
 
@@ -116,39 +119,63 @@ export default function CreateValidationTask() {
     const taskObject = { id: create_UUID(), data: [] };
 
     formData.unformattedData.forEach((contact) => {
-      if (contact[selectedHeaders.Numbers]) {
-        const name = contact[selectedHeaders.Name];
-        const num = parsePhoneNumber(contact[selectedHeaders.Numbers]);
-        const number = num.format("E.164").replace("+", "");
-        // console.log("number", number);
-        if (isValidPhoneNumber("+" + number)) {
-          var vCard = vCardsJS();
-          vCard.firstName = name;
-          vCard.workPhone = number;
-          mainString = mainString + vCard.getFormattedString();
-          const dataToPush = {
-            queryName: name,
-            queryNumber: number,
-            unformattedNumber: contact[selectedHeaders.Numbers],
-          };
+      if (contact[selectedHeaders.Numbers] != ("" || undefined)) {
+        console.log(contact[selectedHeaders.Numbers]);
+        try {
+          const name = contact[selectedHeaders.Name];
+          const num = parsePhoneNumber(
+            contact[selectedHeaders.Numbers].toString()
+          );
+          const number = num.format("E.164").replace("+", "");
+          // console.log("number", number);
+          if (isValidPhoneNumber("+" + number)) {
+            var vCard = vCardsJS();
+            vCard.firstName = name;
+            vCard.workPhone = number;
+            mainString = mainString + vCard.getFormattedString();
+            const dataToPush = {
+              queryName: name,
+              queryNumber: number,
+              unformattedNumber: contact[selectedHeaders.Numbers],
+            };
 
-          taskObject.data.push(dataToPush);
-          // console.log("mainString", mainString);
+            taskObject.data.push(dataToPush);
+
+            // console.log("mainString", mainString);
+          }
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: `Error creating task:${error}.`,
+            status: "error",
+            duration: 5000,
+            isClosable: false,
+          });
         }
       }
     });
+    if (taskObject.data.length != 0) {
+      socket.emit(
+        "create_task",
+        {
+          ...taskObject,
+          file: formData.unformattedData,
+        },
+        (status) => {
+          fileUploadedToast(status);
+        }
+      );
+      setVCardOutput({ ...vCardOutput, mainString });
+    } else {
+      toast({
+        title: "Error",
+        description: `No numbers found`,
+        status: "error",
+        duration: 5000,
+        isClosable: false,
+      });
+    }
     // console.log("formData.unformattedData", formData.unformattedData);
-    socket.emit(
-      "create_task",
-      {
-        ...taskObject,
-        file: formData.unformattedData,
-      },
-      (status) => {
-        fileUploadedToast(status);
-      }
-    );
-    setVCardOutput({ ...vCardOutput, mainString });
     // console.log("mainString final", mainString);
   }
 
