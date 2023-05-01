@@ -2,7 +2,8 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "WhatsappAutoBot"
-#define MyAppVersion "0.4.8"
+#define MyAppVersion "0.4.9"
+#define MyAppVersionSafe "0_4_9"
 #define MyAppPublisher "Ishfaq Ahmed"
 #define MyAppURL "https://www.whatsappautobot.vercel.com/"
 #define MyAppExeName "WhatsappAutoBotServer.exe"
@@ -24,7 +25,7 @@ AllowNoIcons=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=setup
-OutputBaseFilename={#MyAppName}Setup
+OutputBaseFilename={#MyAppName}{#MyAppVersionSafe}Setup
 SetupIconFile="./icons/setup.ico"
 Compression=lzma
 SolidCompression=yes

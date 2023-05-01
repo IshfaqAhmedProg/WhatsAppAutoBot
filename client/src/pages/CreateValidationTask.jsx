@@ -25,10 +25,7 @@ import vCardsJS from "vcards-js";
 import { isMobilePhone } from "validator";
 import { create_UUID } from "../functions/createUUID";
 import ContactCard from "../components/ContactCard";
-import {
-  isValidPhoneNumber,
-  parsePhoneNumber,
-} from "libphonenumber-js";
+import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { useClient } from "../contexts/ClientContext";
 import PageTitle from "../components/PageTitle";
 
