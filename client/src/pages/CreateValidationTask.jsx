@@ -141,13 +141,18 @@ export default function CreateValidationTask() {
             // console.log("mainString", mainString);
           }
         } catch (error) {
-          toast({
-            title: "Error",
-            description: `Error creating task:${error}.`,
-            status: "error",
-            duration: 5000,
-            isClosable: false,
-          });
+          if (!toast.isActive("numberError")) {
+            toast({
+              id: "numberError",
+              title: "Error",
+              description: `Error in number ${
+                contact[selectedHeaders.Numbers]
+              }:${error}.`,
+              status: "error",
+              duration: 5000,
+              isClosable: false,
+            });
+          }
         }
       }
     });
