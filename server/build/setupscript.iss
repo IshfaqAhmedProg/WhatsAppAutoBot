@@ -7,7 +7,7 @@
 #define MyAppPublisher "Ishfaq Ahmed"
 #define MyAppURL "https://www.whatsappautobot.vercel.com/"
 #define MyAppExeName "WhatsappAutoBotServer.exe"
-#define SetupOutputDir "../../../dist"
+#define SetupOutputDir "../../dist"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
