@@ -141,7 +141,7 @@ export default function Home() {
         {!qr ? (
           <>
             <Link
-              to="https://github.com/IshfaqAhmedProg/WhatsAppAutoBot-Dist/zipball/master"
+              to="https://drive.google.com/uc?export=download&id=1luMdSz3yf91cncaN7M0_tJgM9xjWv_Pb"
               target="_blank"
             >
               <ButtonGroup isAttached>

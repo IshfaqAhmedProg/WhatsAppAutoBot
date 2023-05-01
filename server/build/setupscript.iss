@@ -7,6 +7,7 @@
 #define MyAppPublisher "Ishfaq Ahmed"
 #define MyAppURL "https://www.whatsappautobot.vercel.com/"
 #define MyAppExeName "WhatsappAutoBotServer.exe"
+#define SetupOutputDir "../../../dist"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -24,7 +25,7 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=setup
+OutputDir={#SetupOutputDir}
 OutputBaseFilename={#MyAppName}{#MyAppVersionSafe}Setup
 SetupIconFile="./icons/setup.ico"
 Compression=lzma
@@ -47,5 +48,4 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Verb: runas; Flags: postinstall skipifsilent runascurrentuser shellexec waituntilterminated;
