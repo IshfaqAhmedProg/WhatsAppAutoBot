@@ -7,16 +7,16 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "build": "pkg src/index.js -t node18-win-x64 -o build/WhatsappAutoBotServer && cd build && iscc setupscript.iss && cd .. "
+    "build": "cd build && iscc setupscript.iss && cd .. "
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@angablue/exe": "^1.2.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "mongoose": "^7.0.0",
     "node-json-db": "^2.1.4",
+    "node-resourcehacker": "^1.2.1",
     "qrcode-terminal": "^0.12.0",
     "socket.io": "^4.6.1",
     "whatsapp-web.js": "^1.19.4",
