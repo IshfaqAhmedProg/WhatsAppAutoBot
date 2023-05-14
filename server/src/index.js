@@ -104,13 +104,12 @@ io.on('connection', async (socket) => {
         //initialise the whatsappwebjs client
         try {
             wwebjsClient.initialize();
+            console.log("Client initialised!")
+            console.log("Client id", activeClientData.id)
         }
         catch (err) {
             console.log(err)
         }
-        console.log("Client initialised!")
-        console.log("Client id", activeClientData.id)
-        console.log('Client Error:', error)
         //if not logged in for a while or new client needs to scan the qr code
         wwebjsClient.on('qr', qr => {
             console.log(qr)
