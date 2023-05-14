@@ -91,24 +91,26 @@ io.on('connection', async (socket) => {
         socket.join(activeClientData.id)
         console.log('Connected to room', socket.client.id)
         socket.to(socket.client.id).emit('recieve_message', 'Loading client! Please wait...')
+        //create a whatsappwebjs client
+        const wwebjsClient = new Client({
+            authStrategy: new LocalAuth({
+                clientId: activeClientData.id
+            }),
+            puppeteer: {
+                args: ['--no-sandbox'],
+                executablePath: './chromium/chrome-win/chrome.exe'
+            }
+        });
+        //initialise the whatsappwebjs client
         try {
-            //create a whatsappwebjs client
-            const wwebjsClient = new Client({
-                authStrategy: new LocalAuth({
-                    clientId: activeClientData.id
-                }),
-                puppeteer: {
-                    args: ['--no-sandbox'],
-                    executablePath: './chromium/chrome-win/chrome.exe'
-                }
-            });
-            //initialise the whatsappwebjs client
             wwebjsClient.initialize();
-            console.log("Client initialised!")
-            console.log("Client id", activeClientData.id)
-        } catch (error) {
-            console.log('Client Error:', error)
         }
+        catch (err) {
+            console.log(err)
+        }
+        console.log("Client initialised!")
+        console.log("Client id", activeClientData.id)
+        console.log('Client Error:', error)
         //if not logged in for a while or new client needs to scan the qr code
         wwebjsClient.on('qr', qr => {
             console.log(qr)
