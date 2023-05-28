@@ -1,8 +1,8 @@
-import { Box, Button, Heading, Image, Text } from "@chakra-ui/react";
+import { Box, Button, Image, Text, Tooltip } from "@chakra-ui/react";
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import "../index.css";
-import { FaExchangeAlt } from "react-icons/fa";
+import { FaExchangeAlt, FaQuestion } from "react-icons/fa";
 import { useClient } from "../contexts/ClientContext";
 import PageTitle from "../components/PageTitle";
 
@@ -55,8 +55,41 @@ export default function Menu() {
 
   return (
     <>
+      <Box textAlign={"right"} position="absolute" right={"5%"} top={"5%"}>
+        
+        <Box display={"flex"} gap={2}>
+          <Link to="/" reloadDocument>
+            <Tooltip label="Change client">
+              <Button
+                color="gray.700"
+                colorScheme="blackAlpha"
+                onClick={changeClient}
+                size="sm"
+                _hover={{ color: "red.800", borderColor: "red.800" }}
+              >
+                <FaExchangeAlt />
+                &nbsp; Change Client
+              </Button>
+            </Tooltip>
+          </Link>
+          <Link to="/learnMore">
+            <Tooltip label="Learn more">
+              <Button color="gray.700" colorScheme="blackAlpha" size="sm">
+                <FaQuestion />
+              </Button>
+            </Tooltip>
+          </Link>
+        </Box>
+        <Box my="2">
+          <Text color="gray.700">Client:</Text>
+          <Text fontWeight="bold" color="whatsapp.600">
+            {clientData?.name}
+          </Text>
+          <Text color="whatsapp.800">{clientData?.id}</Text>
+        </Box>
+      </Box>
       <Link
-        to="https://github.com/IshfaqAhmedProg"
+        to="https://github.com/IshfaqAhmedProg/WhatsAppAutoBot"
         target="_blank"
         style={{ position: "absolute", top: "5%", left: "5%" }}
       >
@@ -72,37 +105,11 @@ export default function Menu() {
         />
       </Link>
       <PageTitle>Menu</PageTitle>
-      <Box
-        position="absolute"
-        top="8%"
-        right="5%"
-        color="gray.700"
-        textAlign="right"
-      >
-        <Link to="/" reloadDocument>
-          <Button
-            color="gray.700"
-            colorScheme="blackAlpha"
-            onClick={changeClient}
-            size="sm"
-            _hover={{ color: "red.800", borderColor: "red.800" }}
-          >
-            <FaExchangeAlt />
-            &nbsp; Change Client
-          </Button>
-        </Link>
-        <Box my="2">
-          <Text color="gray.700">Client:</Text>
-          <Text fontWeight="bold" color="whatsapp.600">
-            {clientData?.name}
-          </Text>
-          <Text color="whatsapp.800">{clientData?.id}</Text>
-        </Box>
-      </Box>
+
       <Box
         w="70%"
         maxW="sm"
-        minW="xs"
+        minW="sm"
         borderRadius="md"
         bg="blackAlpha.400"
         display="flex"
@@ -126,7 +133,6 @@ export default function Menu() {
                   background: "var(--chakra-colors-whatsapp-700)",
                   color: "white",
                   transform: "scale(1.01)",
-                  fontSize: "1.1em",
                 }}
               >
                 {item.display}
@@ -138,6 +144,7 @@ export default function Menu() {
           );
         })}
       </Box>
+      <Box position={"absolute"} top={"20%"} left={"80%"}></Box>
     </>
   );
 }

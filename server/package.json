@@ -7,9 +7,9 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "build": "cd build && iscc setupscript.iss && cd .. "
+    "build": "pkg src/index.js -t node18-win-x64 -o build/WhatsappAutoBotServer && cd build && iscc setupscript.iss && cd .. "
   },
-  "author": "",
+  "author": "Ishfaq Ahmed",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",

@@ -1,13 +1,11 @@
 import {
   Box,
   Button,
-  Card,
-  CardBody,
   Checkbox,
   Divider,
   FormControl,
   FormLabel,
-  Heading,
+  IconButton,
   Input,
   Select,
   Stack,
@@ -18,6 +16,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { BiDownload } from "react-icons/bi";
 import { TbTrashXFilled } from "react-icons/tb";
+import { FaQuestion } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { read, utils } from "xlsx";
 import { uniqueKeys } from "../functions/uniqueKeys";
@@ -28,6 +27,7 @@ import ContactCard from "../components/ContactCard";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { useClient } from "../contexts/ClientContext";
 import PageTitle from "../components/PageTitle";
+import LearnMoreButton from "../components/LearnMoreButton";
 
 export default function CreateValidationTask() {
   const { socket } = useClient();
@@ -266,6 +266,7 @@ export default function CreateValidationTask() {
   }, [selectedHeaders.Numbers]);
   return (
     <>
+      <LearnMoreButton goto={"/learnMore/validate"} />
       <PageTitle>Create Validation Task</PageTitle>
       {!vCardOutput.ready ? ( //if vcardoutput is not ready
         <form onSubmit={handleCreateTaskFile} style={{ height: "100%" }}>

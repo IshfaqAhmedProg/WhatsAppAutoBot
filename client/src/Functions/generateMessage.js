@@ -3,11 +3,11 @@ export function generateMessage(data, name = null) {
     const farewell = data.farewells[Math.floor(Math.random() * data.farewells.length)];
     const body = data.bodies[Math.floor(Math.random() * data.bodies.length)];
 
-    let message = `${greeting}`;
+    let message = `${greeting ?? ''}`;
     if (name && data.addName) {
         message += `, ${name}`;
     }
-    message += `\n\n${body.message.replace('[CONTACTNAME]', name || '')}\n\n${farewell}`;
+    message += `\n\n${body.message.replace('[CONTACTNAME]', name || '')}\n\n${farewell ?? ''}`;
 
     return message;
 }

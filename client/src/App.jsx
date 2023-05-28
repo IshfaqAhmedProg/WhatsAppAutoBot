@@ -5,7 +5,7 @@ import Home from "./Home";
 import Menu from "./pages/Menu";
 import { Box, Image, Stack, Text, useToast } from "@chakra-ui/react";
 import CreateValidationTask from "./pages/CreateValidationTask";
-import FeaturesLayout from "./components/FeaturesLayout";
+import BackButton from "./components/BackButton";
 import { TbCircleDotFilled } from "react-icons/tb";
 import AllContacts from "./pages/AllContacts";
 import ValidateNumbers from "./pages/ValidateNumbers";
@@ -14,8 +14,12 @@ import SelectContacts from "./pages/SelectContacts";
 import { useClient } from "./contexts/ClientContext";
 import packageJSON from "../package.json";
 import ComposeMessage from "./pages/ComposeMessage";
-import SendMessage from "./components/SendMessage";
+import SendMessage from "./pages/SendMessage";
 import AllMessages from "./pages/AllMessages";
+import LearnMore from "./pages/Documentation/LearnMore";
+import LearnMoreLayout from "./components/LearnMoreLayout";
+import LearnMoreValidation from "./pages/Documentation/LearnMoreValidation";
+import LearnMoreAutoMessage from "./pages/Documentation/LearnMoreAutoMessage";
 export default function App() {
   const { socket, serverConnection, handleConnect, handleDisconnect } =
     useClient();
@@ -106,7 +110,12 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/menu" element={<Menu />} />
-          <Route element={<FeaturesLayout />}>
+          <Route element={<BackButton />}>
+            <Route element={<LearnMoreLayout />} path="/learnMore">
+              <Route index element={<LearnMore />} />
+              <Route path="validation" element={<LearnMoreValidation />} />
+              <Route path="automessage" element={<LearnMoreAutoMessage />} />
+            </Route>
             <Route
               path="/createValidationTask"
               element={<CreateValidationTask />}

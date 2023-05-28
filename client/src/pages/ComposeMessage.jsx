@@ -18,6 +18,7 @@ import MessageBodyCard from "../components/MessageBodyCard";
 import { create_UUID } from "../functions/createUUID";
 import { useClient } from "../contexts/ClientContext";
 import { useNavigate } from "react-router-dom";
+import LearnMoreButton from "../components/LearnMoreButton";
 
 export default function ComposeMessage() {
   const { socket } = useClient();
@@ -91,6 +92,7 @@ export default function ComposeMessage() {
   }
   return (
     <>
+      <LearnMoreButton goto={"/learnMore/automessage"} />
       <PageTitle>Compose New Message</PageTitle>
       <Stack
         borderRadius="lg"

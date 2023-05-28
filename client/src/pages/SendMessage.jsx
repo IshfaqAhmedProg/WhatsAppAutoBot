@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import PageTitle from "./PageTitle";
+import PageTitle from "../components/PageTitle";
 import {
   Box,
   Button,
@@ -15,11 +15,11 @@ import {
 } from "@chakra-ui/react";
 import { useClient } from "../contexts/ClientContext";
 import { useNavigate, useParams } from "react-router-dom";
-import ContactCard from "./ContactCard";
+import ContactCard from "../components/ContactCard";
 import { BiCheck, BiCog, BiPause, BiPlay, BiX } from "react-icons/bi";
 import getRandom from "../functions/getRandom";
 import { generateMessage } from "../functions/generateMessage";
-import StatsBox from "./StatsBox";
+import StatsBox from "../components/StatsBox";
 const range = { max: 15000, min: 10000 };
 const initialRandom = getRandom(range.max, range.min);
 

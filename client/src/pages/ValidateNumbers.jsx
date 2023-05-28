@@ -131,7 +131,7 @@ export default function ValidateNumbers() {
         command={commandToExecute.command}
         message={commandToExecute.message}
       />
-      <PageTitle>Validate Numbers</PageTitle>
+      <PageTitle>Validation Tasks</PageTitle>
       <Stack>
         <Text fontWeight="bold" color="whatsapp.500">
           All Tasks

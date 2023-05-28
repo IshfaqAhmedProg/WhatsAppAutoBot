@@ -22,8 +22,9 @@ import { create_UUID } from "./functions/createUUID";
 import "./index.css";
 import { TbTrashXFilled } from "react-icons/tb";
 import { FiLogIn } from "react-icons/fi";
-import { FaServer } from "react-icons/fa";
+import { FaServer, FaQuestion } from "react-icons/fa";
 import packageJson from "../package.json";
+import LearnMoreButton from "./components/LearnMoreButton";
 
 export default function Home() {
   const { socket } = useClient();
@@ -113,13 +114,17 @@ export default function Home() {
   }, [socket]);
   return (
     <>
+      <LearnMoreButton goto="/learnMore" />
       <Box
         position="absolute"
         left="50%"
         top="10%"
         transform="translate(-50%,-10%)"
       >
-        <Link to="https://github.com/IshfaqAhmedProg" target="_blank">
+        <Link
+          to="https://github.com/IshfaqAhmedProg/WhatsAppAutoBot"
+          target="_blank"
+        >
           <Image
             src="/WhatsappBotLogo.png"
             alt="Logo"
