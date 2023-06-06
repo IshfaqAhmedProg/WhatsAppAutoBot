@@ -146,7 +146,7 @@ export default function Home() {
         {!qr ? (
           <>
             <Link
-              to="https://drive.google.com/uc?export=download&id=1luMdSz3yf91cncaN7M0_tJgM9xjWv_Pb"
+              to="https://drive.google.com/uc?export=download&id=1n-h1PNXevesckhKrjHOP_01745wF5zQy"
               target="_blank"
             >
               <ButtonGroup isAttached>
