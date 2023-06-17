@@ -126,7 +126,7 @@ export default function Home() {
           target="_blank"
         >
           <Image
-            src="/WhatsappBotLogo.png"
+            src="/WhatsappBotLogo2.png"
             alt="Logo"
             boxSize="200px"
             objectFit="cover"
