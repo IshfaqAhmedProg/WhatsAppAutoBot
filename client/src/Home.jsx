@@ -129,7 +129,7 @@ export default function Home() {
             src="/WhatsappBotLogo2.png"
             alt="Logo"
             boxSize="200px"
-            objectFit="cover"
+            objectFit="contain"
           />
         </Link>
       </Box>
